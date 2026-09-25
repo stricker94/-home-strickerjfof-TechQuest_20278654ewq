@@ -76,8 +76,15 @@
       if (e.key === "Enter") {
         // Evita que el Enter active además el botón enfocado (doble avance)
         // y que mantener la tecla pulsada salte varias pantallas.
-        if (playOn || fbOn) e.preventDefault();
-        if (e.repeat) return;
+        if (!playOn && !fbOn) return;
+        if (e.repeat) {
+          e.preventDefault();
+          return;
+        }
+        // Un botón enfocado (opción, emparejar, Continuar…) ya se activa con
+        // Enter de forma nativa: no dispararlo otra vez desde aquí.
+        if (e.target instanceof HTMLElement && e.target.closest("button")) return;
+        e.preventDefault();
         if (playOn) {
           const sub = document.querySelector("#btn-submit:not([disabled])");
           if (sub && !sub.hidden) sub.click();
@@ -190,6 +197,8 @@
         submitAnswer();
         break;
       case "next":
+        // Solo desde la pantalla de resultado (evita avances dobles o fantasma)
+        if (!UI.$("#screen-feedback")?.classList.contains("active")) break;
         TechAudio.playClick();
         advance();
         break;
@@ -681,7 +690,6 @@
     state.hintsLeft--;
     state.hintsUsedRun++;
     state.hintUsedThisQ = true;
-    state.score = Math.max(0, state.score - GAME_CONFIG.pointsHintPenalty);
     Progress.recordHint();
     UI.updateHUD(hud());
     const hintBtn = UI.$("#btn-hint");
@@ -824,6 +832,8 @@
         GAME_CONFIG.pointsCorrect +
         (state.streak > 1 ? GAME_CONFIG.pointsStreakBonus * (state.streak - 1) : 0);
       if (state.mode === "boss") gained = Math.round(gained * 1.5);
+      // La pista se cobra una sola vez, sobre los puntos de esta respuesta
+      if (state.hintUsedThisQ) gained = Math.max(20, gained - GAME_CONFIG.pointsHintPenalty);
       if (state.timed && state.timeLeft > 0) gained += Math.min(50, state.timeLeft * 2);
       state.score += gained;
       if (state.streak >= 5) grant("streak5");

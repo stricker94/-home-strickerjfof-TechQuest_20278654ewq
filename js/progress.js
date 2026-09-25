@@ -5,7 +5,9 @@ const Progress = (() => {
   function parse(key, fallback) {
     try {
       const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
+      const val = raw ? JSON.parse(raw) : null;
+      // Datos corruptos o de otro tipo (p. ej. "null") no deben romper el juego
+      return val && typeof val === "object" ? val : fallback;
     } catch (_) {
       return fallback;
     }
