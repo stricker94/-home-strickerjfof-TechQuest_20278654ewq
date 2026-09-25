@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Tech Quest — juego educativo de IT para Josué. Linux, Windows, impresoras, redes, programación y soporte." />
+  <meta name="theme-color" content="#0a0e17" />
+  <title>Tech Quest — Aventura IT</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="logo">TECH <span>QUEST</span></div>
+      <button type="button" class="btn btn-ghost" id="btn-mute" data-action="mute" aria-pressed="false" title="Silenciar">🔊 Sonido</button>
+    </header>
+
+    <!-- MENÚ -->
+    <section id="screen-menu" class="screen active" aria-label="Menú principal">
+      <div class="panel hero">
+        <h1>TECH QUEST</h1>
+        <p class="tagline">Aventura educativa de IT · Hecho para <span class="for">Josué</span></p>
+        <div class="stat-pills">
+          <span class="pill">Récord: <strong id="menu-highscore">0</strong></span>
+          <span class="pill">Desafíos: <strong id="menu-total-q">100+</strong></span>
+          <span class="pill">Mundos: <strong id="menu-worlds">8</strong></span>
+          <span class="pill">Logros: <strong id="menu-ach-count">0 / 10</strong></span>
+        </div>
+        <div id="menu-badges" class="menu-badges" aria-label="Logros"></div>
+        <div class="btn-row modes">
+          <button type="button" class="btn btn-primary" data-action="play">▶ Aventura</button>
+          <button type="button" class="btn" data-action="practice">📚 Práctica</button>
+          <button type="button" class="btn" data-action="marathon">🏃 Maratón</button>
+          <button type="button" class="btn" data-action="timer">⏱️ Cronómetro</button>
+          <button type="button" class="btn" data-action="boss">👹 Boss</button>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-ghost" data-action="achievements">🏅 Logros</button>
+          <button type="button" class="btn btn-ghost" data-action="stats">📊 Stats</button>
+          <button type="button" class="btn btn-ghost" data-action="howto">❓ Cómo jugar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CÓMO JUGAR -->
+    <section id="screen-howto" class="screen" aria-label="Cómo jugar">
+      <div class="panel">
+        <h2 class="screen-title">Cómo jugar</h2>
+        <ul class="howto-list">
+          <li><strong>Aventura:</strong> cada mundo tiene <strong>5 niveles</strong> (Básico → Intermedio → Avanzado → Experto → Maestro). Completa un nivel para desbloquear el siguiente; el nivel 5 desbloquea el siguiente mundo.</li>
+          <li><strong>Mundos:</strong> 10 en total, incluyendo Ciberseguridad, Hardware, <strong>Cloud / servicios</strong> y <strong>Base de datos</strong>.</li>
+          <li><strong>Práctica:</strong> sin vidas, elige cualquier mundo (ya desbloqueado o no).</li>
+          <li><strong>Maratón:</strong> 20 preguntas mezcladas de todos los mundos.</li>
+          <li><strong>Cronómetro:</strong> tiempo límite por pregunta.</li>
+          <li><strong>Boss:</strong> incidente difícil cronometrado por mundo (tras desbloquearlo).</li>
+          <li>Tipos: opción múltiple, V/F, completar comando, emparejar, ordenar, escenarios.</li>
+          <li>Controles: clic/táctil; <kbd>1</kbd>–<kbd>4</kbd>; <kbd>V</kbd>/<kbd>F</kbd>; <kbd>Enter</kbd>; <kbd>H</kbd> pista; <kbd>M</kbd> silencio; <kbd>Esc</kbd> salir.</li>
+          <li>Progreso, récord y logros se guardan en este navegador (localStorage).</li>
+        </ul>
+        <div class="btn-row"><button type="button" class="btn btn-primary" data-action="menu">← Menú</button></div>
+      </div>
+    </section>
+
+    <!-- MUNDOS -->
+    <section id="screen-worlds" class="screen" aria-label="Seleccionar mundo">
+      <div class="panel">
+        <h2 class="screen-title" id="worlds-title">Selecciona un mundo</h2>
+        <div id="world-grid" class="world-grid"></div>
+        <div class="btn-row"><button type="button" class="btn" data-action="menu">← Menú</button></div>
+      </div>
+    </section>
+
+
+    <!-- NIVELES -->
+    <section id="screen-levels" class="screen" aria-label="Seleccionar nivel">
+      <div class="panel">
+        <h2 class="screen-title" id="levels-title">Niveles</h2>
+        <p id="levels-world-sub" class="levels-sub"></p>
+        <div id="level-grid" class="level-grid"></div>
+        <div class="btn-row">
+          <button type="button" class="btn" data-action="back-worlds">← Mundos</button>
+          <button type="button" class="btn" data-action="menu">Menú</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- JUEGO -->
+    <section id="screen-play" class="screen" aria-label="Partida">
+      <div class="hud" role="status" aria-live="polite">
+        <div class="hud-world" id="hud-world">—</div>
+        <div class="hud-stats">
+          <span id="hud-lives-wrap">Vidas <strong id="hud-lives">❤️❤️❤️</strong></span>
+          <span>Pts <strong id="hud-score">0</strong></span>
+          <span>Racha <strong id="hud-streak">0</strong></span>
+          <span>Pistas <strong id="hud-hints">2</strong></span>
+          <span id="hud-timer-wrap" hidden>⏱️ <strong id="hud-timer">0s</strong></span>
+          <span id="hud-progress">1 / 1</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="question-meta"><span class="badge" id="question-type">—</span></div>
+        <p id="question-text">Pregunta</p>
+        <div id="hint-box" class="hint-box" hidden></div>
+        <div id="challenge-area" class="challenge-area"></div>
+        <div class="play-actions">
+          <button type="button" class="btn" id="btn-hint" data-action="hint">💡 Pista (H)</button>
+          <button type="button" class="btn btn-primary" id="btn-submit" data-action="submit" hidden>Comprobar</button>
+          <button type="button" class="btn btn-danger btn-ghost" data-action="quit">Salir</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEEDBACK -->
+    <section id="screen-feedback" class="screen" aria-label="Resultado">
+      <div class="panel feedback-center">
+        <span id="feedback-icon" aria-hidden="true">✅</span>
+        <h2 id="feedback-title">¡Correcto!</h2>
+        <p id="feedback-detail"></p>
+        <p id="feedback-explain" class="explain-box"></p>
+        <p id="feedback-ach" class="ach-toast" hidden></p>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="btn-next-feedback" data-action="next">Continuar (Enter)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIN -->
+    <section id="screen-end" class="screen" aria-label="Fin de partida">
+      <div class="panel end-center">
+        <span id="end-icon" aria-hidden="true">🏆</span>
+        <h2 id="end-title">¡Completado!</h2>
+        <p id="end-summary" class="end-summary"></p>
+        <p id="end-unlock" class="unlock-banner" hidden></p>
+        <p class="pill" style="display:inline-block">Récord local: <strong id="end-highscore">0</strong></p>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" data-action="play">Elegir mundo</button>
+          <button type="button" class="btn" id="btn-retry" data-action="retry">Reintentar</button>
+          <button type="button" class="btn" data-action="menu">Menú</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section id="screen-stats" class="screen" aria-label="Estadísticas">
+      <div class="panel">
+        <h2 class="screen-title">Diario de stats</h2>
+        <div id="stats-body"></div>
+        <div class="btn-row"><button type="button" class="btn btn-primary" data-action="menu">← Menú</button></div>
+      </div>
+    </section>
+
+    <!-- LOGROS -->
+    <section id="screen-achievements" class="screen" aria-label="Logros">
+      <div class="panel">
+        <h2 class="screen-title">Logros</h2>
+        <div id="achievements-grid" class="achievements-grid"></div>
+        <div class="btn-row"><button type="button" class="btn btn-primary" data-action="menu">← Menú</button></div>
+      </div>
+    </section>
+
+    <p class="footer-note">Tech Quest · Offline · Web Audio API · Sin dependencias</p>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/content-expand.js"></script>
+  <script src="js/levels-expand.js"></script>
+  <script src="js/levels5-expand.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
