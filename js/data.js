@@ -749,16 +749,16 @@ function getAllPoolQuestions() {
 }
 
 const ACHIEVEMENTS = [
-  { id: "first_win", icon: "🏁", name: "Primera victoria", desc: "Completa un mundo por primera vez." },
+  { id: "first_win", icon: "🏁", name: "Primera victoria", desc: "Completa un nivel de Aventura por primera vez." },
   { id: "streak5", icon: "🔥", name: "Racha x5", desc: "Consigue una racha de 5 aciertos." },
   { id: "streak10", icon: "⚡", name: "Racha x10", desc: "Consigue una racha de 10 aciertos." },
-  { id: "no_hints", icon: "🧠", name: "Sin pistas", desc: "Gana un mundo normal sin usar pistas." },
+  { id: "no_hints", icon: "🧠", name: "Sin pistas", desc: "Completa un nivel de Aventura sin usar pistas." },
   { id: "all_worlds", icon: "🌍", name: "Maestro de mundos", desc: "Completa el nivel 5 (Maestro) de todos los mundos." },
   { id: "marathon", icon: "🏃", name: "Maratonista", desc: "Termina el modo Maratón." },
   { id: "boss_slayer", icon: "👹", name: "Cazador de jefes", desc: "Derrota un Desafío Boss." },
   { id: "all_bosses", icon: "👑", name: "Rey de jefes", desc: "Derrota el boss de cada mundo." },
   { id: "timer_ace", icon: "⏱️", name: "Contrarreloj", desc: "Gana una partida en modo Cronómetro." },
-  { id: "support_hero", icon: "🎫", name: "Héroe de soporte", desc: "Completa el mundo Soporte IT." },
+  { id: "support_hero", icon: "🎫", name: "Héroe de soporte", desc: "Completa el nivel 5 de Soporte IT." },
   { id: "level_master", icon: "⭐", name: "Maestro de niveles", desc: "Completa 25 niveles en total." },
   { id: "security_hero", icon: "🛡️", name: "Escudo digital", desc: "Completa el nivel 5 de Ciberseguridad." },
   { id: "hardware_hero", icon: "🔧", name: "Manitas de hardware", desc: "Completa el nivel 5 de Hardware." },

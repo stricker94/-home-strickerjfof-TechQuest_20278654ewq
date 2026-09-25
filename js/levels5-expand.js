@@ -55,7 +55,7 @@
     "type": "fill",
     "q": "Comando para ver uso de disco por directorio (humano):",
     "answer": "du -h",
-    "accept": "du -h|du -sh|du -h --max-depth=1",
+    "accept": ["du -h", "du -sh", "du -h --max-depth=1"],
     "explain": "du resume uso de disco; -h legible, -s resumen."
   },
   {
@@ -172,7 +172,7 @@
     "type": "fill",
     "q": "Herramienta para inspeccionar tráfico en interfaz (clásica):",
     "answer": "tcpdump",
-    "accept": "tcpdump|wireshark",
+    "accept": ["tcpdump", "wireshark"],
     "explain": "tcpdump captura paquetes; requiere privilegios."
   },
   {
@@ -289,7 +289,7 @@
     "type": "fill",
     "q": "Consola para ver políticas resultantes (gpresult HTML):",
     "answer": "gpresult /h",
-    "accept": "gpresult /h|gpresult /h report.html",
+    "accept": ["gpresult /h", "gpresult /h report.html"],
     "explain": "gpresult /h archivo.html genera informe."
   },
   {
@@ -392,7 +392,7 @@
     "type": "fill",
     "q": "Cmdlet para reiniciar un equipo remoto (uno común):",
     "answer": "Restart-Computer",
-    "accept": "Restart-Computer|restart-computer",
+    "accept": ["Restart-Computer"],
     "explain": "Restart-Computer -ComputerName host"
   },
   {
@@ -509,7 +509,7 @@
     "type": "fill",
     "q": "Protocolo moderno preferido de impresión en IP (sigla):",
     "answer": "IPP",
-    "accept": "IPP|ipp",
+    "accept": ["IPP"],
     "explain": "Internet Printing Protocol (a menudo 631)."
   },
   {
@@ -640,7 +640,7 @@
     "type": "fill",
     "q": "Puerto típico IPP/IPPS (número):",
     "answer": "631",
-    "accept": "631",
+    "accept": ["631"],
     "explain": "IPP clásico usa 631; IPPS va sobre TLS."
   },
   {
@@ -796,7 +796,7 @@
     "type": "fill",
     "q": "Protocolo para evitar bucles en switches L2 (sigla):",
     "answer": "STP",
-    "accept": "STP|RSTP|MSTP|stp",
+    "accept": ["STP", "RSTP", "MSTP"],
     "explain": "Spanning Tree Protocol (y variantes)."
   },
   {
@@ -927,7 +927,7 @@
     "type": "fill",
     "q": "Puerto HTTPS por defecto (número):",
     "answer": "443",
-    "accept": "443",
+    "accept": ["443"],
     "explain": "TLS en 443; HTTP 80."
   },
   {
@@ -1083,7 +1083,7 @@
     "type": "fill",
     "q": "Sistema de control de versiones más usado (nombre):",
     "answer": "git",
-    "accept": "git|Git",
+    "accept": ["git"],
     "explain": "git init / clone / commit / push."
   },
   {
@@ -1186,7 +1186,7 @@
     "type": "fill",
     "q": "Formato de intercambio muy usado en APIs web (sigla):",
     "answer": "JSON",
-    "accept": "JSON|json",
+    "accept": ["JSON"],
     "explain": "JavaScript Object Notation."
   },
   {
@@ -1303,7 +1303,7 @@
     "type": "fill",
     "q": "Sigla del acuerdo de nivel operacional entre equipos internos:",
     "answer": "OLA",
-    "accept": "OLA|ola",
+    "accept": ["OLA"],
     "explain": "Operational Level Agreement."
   },
   {
@@ -1406,7 +1406,7 @@
     "type": "fill",
     "q": "Sigla de tiempo medio de reparación/resolución:",
     "answer": "MTTR",
-    "accept": "MTTR|mttr",
+    "accept": ["MTTR"],
     "explain": "Mean Time To Repair/Restore/Resolve según contexto."
   },
   {
@@ -1523,7 +1523,7 @@
     "type": "fill",
     "q": "Sigla de gestión de identidad y acceso:",
     "answer": "IAM",
-    "accept": "IAM|iam",
+    "accept": ["IAM"],
     "explain": "Identity and Access Management."
   },
   {
@@ -1626,7 +1626,7 @@
     "type": "fill",
     "q": "Sigla de análisis de comportamiento de usuarios/entidades:",
     "answer": "UEBA",
-    "accept": "UEBA|ueba",
+    "accept": ["UEBA"],
     "explain": "User and Entity Behavior Analytics."
   },
   {
@@ -1743,7 +1743,7 @@
     "type": "fill",
     "q": "Bus de expansión dominante para GPUs (sigla):",
     "answer": "PCIe",
-    "accept": "PCIe|PCI-E|pci-e",
+    "accept": ["PCIe", "PCI-E"],
     "explain": "Peripheral Component Interconnect Express."
   },
   {
@@ -1846,7 +1846,7 @@
     "type": "fill",
     "q": "Interfaz de gestión remota Dell common (sigla 5 letras):",
     "answer": "iDRAC",
-    "accept": "iDRAC|idrac",
+    "accept": ["iDRAC"],
     "explain": "Integrated Dell Remote Access Controller."
   },
   {
@@ -1969,7 +1969,7 @@
       "type": "fill",
       "q": "Sigla de software como servicio:",
       "answer": "SaaS",
-      "accept": "SaaS|saas",
+      "accept": ["SaaS"],
       "explain": "Software as a Service."
     },
     {
@@ -2064,7 +2064,7 @@
       "type": "fill",
       "q": "Sigla de infraestructura como servicio:",
       "answer": "IaaS",
-      "accept": "IaaS|iaas",
+      "accept": ["IaaS"],
       "explain": "Infrastructure as a Service."
     },
     {
@@ -2167,7 +2167,7 @@
       "type": "fill",
       "q": "Sigla del objetivo de tiempo de recuperación:",
       "answer": "RTO",
-      "accept": "RTO|rto",
+      "accept": ["RTO"],
       "explain": "Recovery Time Objective."
     },
     {
@@ -2292,7 +2292,7 @@
       "type": "fill",
       "q": "Sigla de red privada virtual (túnel):",
       "answer": "VPN",
-      "accept": "VPN|vpn",
+      "accept": ["VPN"],
       "explain": "Site-to-site o client VPN hacia cloud."
     },
     {
@@ -2395,7 +2395,7 @@
       "type": "fill",
       "q": "Sigla de plataforma como servicio:",
       "answer": "PaaS",
-      "accept": "PaaS|paas",
+      "accept": ["PaaS"],
       "explain": "Platform as a Service."
     },
     {
@@ -2530,7 +2530,7 @@
       "type": "fill",
       "q": "BOSS: Objetivo de pérdida de datos tolerable (sigla):",
       "answer": "RPO",
-      "accept": "RPO|rpo",
+      "accept": ["RPO"],
       "explain": "Recovery Point Objective."
     }
   ]
@@ -2585,7 +2585,7 @@
       "type": "fill",
       "q": "Palabra SQL para insertar filas:",
       "answer": "INSERT",
-      "accept": "INSERT|insert",
+      "accept": ["INSERT"],
       "explain": "INSERT INTO ... VALUES ..."
     },
     {
@@ -2680,7 +2680,7 @@
       "type": "fill",
       "q": "Palabra SQL para borrar filas:",
       "answer": "DELETE",
-      "accept": "DELETE|delete",
+      "accept": ["DELETE"],
       "explain": "DELETE FROM t WHERE ..."
     },
     {
@@ -2783,7 +2783,7 @@
       "type": "fill",
       "q": "Sigla de lenguaje de consulta estructurado:",
       "answer": "SQL",
-      "accept": "SQL|sql",
+      "accept": ["SQL"],
       "explain": "Structured Query Language."
     },
     {
@@ -2908,7 +2908,7 @@
       "type": "fill",
       "q": "Comando SQL para quitar una tabla entera (peligroso):",
       "answer": "DROP TABLE",
-      "accept": "DROP TABLE|drop table",
+      "accept": ["DROP TABLE"],
       "explain": "DDL destructivo; no es DELETE."
     },
     {
@@ -3011,7 +3011,7 @@
       "type": "fill",
       "q": "Sigla de las propiedades clásicas de transacciones:",
       "answer": "ACID",
-      "accept": "ACID|acid",
+      "accept": ["ACID"],
       "explain": "Atomicity Consistency Isolation Durability."
     },
     {
@@ -3146,7 +3146,7 @@
       "type": "fill",
       "q": "BOSS: Cláusula SQL para filtrar filas (palabra):",
       "answer": "WHERE",
-      "accept": "WHERE|where",
+      "accept": ["WHERE"],
       "explain": "UPDATE/DELETE peligrosos sin WHERE."
     }
   ]
