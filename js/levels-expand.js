@@ -137,7 +137,7 @@
     { id: "pgL3a", level: 3, type: "mc", q: "Una race condition ocurre cuando…", options: ["El resultado depende del orden/tiempo de ejecución concurrente", "Falta papel", "El DNS es /24", "El monitor está en 60 Hz"], answer: 0, explain: "Locks, colas y diseño cuidadoso mitigan carreras." },
     { id: "pgL3b", level: 3, type: "tf", q: "Las pruebas automatizadas reducen regresiones al cambiar código.", answer: true, explain: "CI ejecuta tests en cada cambio." },
     { id: "pgL3c", level: 3, type: "scenario", q: "API devuelve 500 intermitente. ¿Dónde mirar primero?", options: ["Logs del servidor, métricas y trazas de la request", "Solo el CSS", "El tambor de la impresora", "El salvapantallas"], answer: 0, explain: "Correlaciona request-id entre gateway y app." },
-    { id: "pgL3d", level: 3, type: "match", q: "Empareja:", pairs: [
+    { id: "pgL3d", level: 3, type: "match", q: "Empareja cada concepto de backend con su definición:", pairs: [
       { left: "try/catch", right: "Manejo de excepciones" },
       { left: "JSON", right: "Formato de datos muy usado en APIs" },
       { left: "REST", right: "Estilo de API sobre HTTP" },
@@ -157,7 +157,7 @@
     { id: "suL2e", level: 2, type: "mc", q: "Una KB (knowledge base) bien escrita sirve para…", options: ["Resolver casos repetidos más rápido y con consistencia", "Ocultar incidentes", "Dar admin a todos", "Desactivar logs"], answer: 0, explain: "Documenta pasos verificados y causas conocidas." },
     { id: "suL3a", level: 3, type: "mc", q: "En un major incident, N1 prioriza…", options: ["Comunicación, bridge y runbook / escalación", "Cambiar wallpapers VIP", "Silencio total", "Experimentos sin registro"], answer: 0, explain: "Restaurar servicio + comunicar status." },
     { id: "suL3b", level: 3, type: "scenario", q: "Change falló en prod. Siguiente paso típico:", options: ["Ejecutar rollback según plan y avisar", "Seguir cambiando a ciegas", "Borrar backups", "Culpar al usuario final"], answer: 0, explain: "Todo change serio trae rollback." },
-    { id: "suL3c", level: 3, type: "match", q: "Empareja:", pairs: [
+    { id: "suL3c", level: 3, type: "match", q: "Empareja cada término ITIL con su significado:", pairs: [
       { left: "Incidente", right: "Interrupción no planificada del servicio" },
       { left: "Problema", right: "Causa raíz / investigación más profunda" },
       { left: "Request", right: "Petición de servicio estándar" },

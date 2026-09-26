@@ -101,6 +101,7 @@ body {
 .btn:focus-visible,
 .option-btn:focus-visible,
 .world-card:focus-visible,
+.level-card:focus-visible,
 .match-item:focus-visible,
 .icon-btn:focus-visible,
 .fill-input:focus-visible {
@@ -697,7 +698,6 @@ kbd {
 .tq-toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%) translateY(120%); background: #122; color: var(--accent); border: 1px solid var(--accent); padding: 0.7rem 1.1rem; border-radius: 999px; z-index: 100; transition: transform 0.25s ease; font-family: var(--mono); font-size: 0.9rem; pointer-events: none; }
 .tq-toast.show { transform: translateX(-50%) translateY(0); }
 
-.option-btn.eliminated { opacity: 0.35; text-decoration: line-through; }
 .option-btn.correct { border-color: var(--ok); background: rgba(0,255,136,0.12); }
 .option-btn.wrong { border-color: var(--danger); background: rgba(255,85,119,0.12); }
 
@@ -751,3 +751,11 @@ kbd {
   font-size: 0.85rem;
  font-family: var(--mono, monospace); font-size: 0.85rem; color: var(--accent, #00ffc8); }
 .levels-sub { color: var(--muted, #8aa0c0); margin: 0 0 0.5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
