@@ -72,6 +72,7 @@ const UI = (() => {
     }
     let label = "—";
     if (st.mode === "marathon") label = "🏃 Maratón";
+    else if (st.mode === "review") label = "🔁 Repaso de errores";
     else if (st.mode === "boss") {
       const w = getWorldById(st.worldId);
       label = "👹 Boss" + (w ? " · " + w.icon + " " + w.name : "");

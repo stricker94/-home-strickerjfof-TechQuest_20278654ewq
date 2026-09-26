@@ -752,6 +752,14 @@ kbd {
  font-family: var(--mono, monospace); font-size: 0.85rem; color: var(--accent, #00ffc8); }
 .levels-sub { color: var(--muted, #8aa0c0); margin: 0 0 0.5rem; }
 
+.end-review { text-align: left; max-width: 36rem; margin: 1rem auto; }
+.end-review summary { cursor: pointer; color: var(--accent2); font-weight: 600; }
+.review-list { padding-left: 1.25rem; }
+.review-list li { margin: 0.75rem 0; }
+.review-q { display: block; }
+.review-a { display: block; color: var(--ok); font-family: var(--mono); font-size: 0.9rem; }
+.review-e { display: block; color: var(--muted); font-size: 0.9rem; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

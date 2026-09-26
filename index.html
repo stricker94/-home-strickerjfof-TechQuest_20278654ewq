@@ -33,6 +33,7 @@
           <button type="button" class="btn" data-action="marathon">🏃 Maratón</button>
           <button type="button" class="btn" data-action="timer">⏱️ Cronómetro</button>
           <button type="button" class="btn" data-action="boss">👹 Boss</button>
+          <button type="button" class="btn" id="btn-review" data-action="review">🔁 Repasar errores (<span id="menu-missed">0</span>)</button>
         </div>
         <div class="btn-row">
           <button type="button" class="btn btn-ghost" data-action="achievements">🏅 Logros</button>
@@ -53,9 +54,11 @@
           <li><strong>Maratón:</strong> 20 preguntas mezcladas de todos los mundos.</li>
           <li><strong>Cronómetro:</strong> tiempo límite por pregunta.</li>
           <li><strong>Boss:</strong> incidente difícil cronometrado por mundo (tras desbloquearlo).</li>
+          <li><strong>Repasar errores:</strong> vuelve a jugar las preguntas que fallaste; cada una sale de la lista cuando la aciertas.</li>
           <li>Tipos: opción múltiple, V/F, completar comando, emparejar, ordenar, escenarios.</li>
           <li>Controles: clic/táctil; <kbd>1</kbd>–<kbd>4</kbd>; <kbd>V</kbd>/<kbd>F</kbd>; <kbd>Enter</kbd>; <kbd>H</kbd> pista; <kbd>M</kbd> silencio; <kbd>Esc</kbd> salir.</li>
-          <li>Progreso, récord y logros se guardan en este navegador (localStorage).</li>
+          <li>El récord solo cuenta en Aventura, Maratón, Cronómetro y Boss.</li>
+          <li>Progreso, récord y logros se guardan en este navegador (localStorage); puedes borrarlos desde Stats.</li>
         </ul>
         <div class="btn-row"><button type="button" class="btn btn-primary" data-action="menu">← Menú</button></div>
       </div>
@@ -132,6 +135,10 @@
         <p id="end-summary" class="end-summary"></p>
         <p id="end-unlock" class="unlock-banner" hidden></p>
         <p class="pill" style="display:inline-block">Récord local: <strong id="end-highscore">0</strong></p>
+        <details id="end-review" class="end-review" hidden>
+          <summary id="end-review-title">Repasa tus errores</summary>
+          <ol id="end-review-list" class="review-list"></ol>
+        </details>
         <div class="btn-row">
           <button type="button" class="btn btn-primary" data-action="play">Elegir mundo</button>
           <button type="button" class="btn" id="btn-retry" data-action="retry">Reintentar</button>
@@ -145,7 +152,10 @@
       <div class="panel">
         <h2 class="screen-title">Diario de stats</h2>
         <div id="stats-body"></div>
-        <div class="btn-row"><button type="button" class="btn btn-primary" data-action="menu">← Menú</button></div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" data-action="menu">← Menú</button>
+          <button type="button" class="btn btn-danger btn-ghost" data-action="reset-progress">🗑️ Borrar progreso</button>
+        </div>
       </div>
     </section>
 

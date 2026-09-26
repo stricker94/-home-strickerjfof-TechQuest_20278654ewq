@@ -534,7 +534,7 @@
     "pairs": [
       {
         "left": "PCL",
-        "right": "Lenguaje común HP-ish"
+        "right": "Lenguaje de comandos de impresora de HP"
       },
       {
         "left": "PostScript",
@@ -730,7 +730,7 @@
     "id": "prL5j",
     "level": 5,
     "type": "match",
-    "q": "Empareja fallo:",
+    "q": "Empareja cada falla de impresión con su causa probable:",
     "pairs": [
       {
         "left": "Páginas en símbolo de basura",
@@ -1017,7 +1017,7 @@
     "id": "netL5j",
     "level": 5,
     "type": "match",
-    "q": "Empareja herramienta:",
+    "q": "Empareja cada herramienta de red con su uso:",
     "pairs": [
       {
         "left": "Wireshark",
@@ -1460,7 +1460,7 @@
     "id": "suL5g",
     "level": 5,
     "type": "tf",
-    "q": "Documentar workarounds en la KB evita que cada agente reinventé la rueda.",
+    "q": "Documentar workarounds en la KB evita que cada agente reinvente la rueda.",
     "answer": true,
     "explain": "Incluye fecha y validez."
   },

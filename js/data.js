@@ -16,6 +16,7 @@ const GAME_CONFIG = {
   storageStats: "techQuestStats",
   storageBoss: "techQuestBossWins",
   storageLevels: "techQuestLevelClears",
+  storageMissed: "techQuestMissed",
   levelsPerWorld: 5,
   marathonCount: 20,
   timerSeconds: 25,
