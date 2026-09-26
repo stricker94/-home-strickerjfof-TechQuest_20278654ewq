@@ -25,7 +25,8 @@
     wrongCount: 0,
     timeLeft: 0,
     timerId: null,
-    pendingAchievements: []
+    pendingAchievements: [],
+    missedRun: []
   };
 
   const MODE_LABELS = {
@@ -33,7 +34,8 @@
     practice: "Práctica",
     marathon: "Maratón",
     timer: "Cronómetro",
-    boss: "Boss"
+    boss: "Boss",
+    review: "Repaso de errores"
   };
 
   let worldPickMode = "campaign";
@@ -145,6 +147,19 @@
         renderWorlds();
         UI.showScreen("screen-worlds");
         break;
+      case "review":
+        TechAudio.playClick();
+        beginReview();
+        break;
+      case "reset-progress":
+        TechAudio.playClick();
+        if (confirm("¿Borrar todo el progreso? Se perderán niveles, logros, récord, estadísticas y errores pendientes.")) {
+          Progress.resetAll();
+          renderStats();
+          refreshMenu();
+          UI.toast("Progreso borrado.");
+        }
+        break;
       case "howto":
         TechAudio.playClick();
         UI.showScreen("screen-howto");
@@ -226,6 +241,7 @@
 
   function retry() {
     if (state.mode === "marathon") beginMarathon();
+    else if (state.mode === "review") beginReview();
     else if (state.mode === "boss") beginBoss(state.worldId);
     else if (state.mode === "timer") beginTimer(state.worldId, state.level);
     else if (state.practice) beginPractice(state.worldId, state.level);
@@ -244,6 +260,10 @@
     UI.setText("#menu-highscore", String(UI.getHighScore()));
     UI.setText("#menu-total-q", String(countQuestions()));
     UI.setText("#menu-worlds", String(WORLDS.length));
+    const missed = missedQuestions().length;
+    UI.setText("#menu-missed", String(missed));
+    const reviewBtn = UI.$("#btn-review");
+    if (reviewBtn) reviewBtn.disabled = missed === 0;
     const unlocked = Progress.getAchievements();
     UI.setText("#menu-ach-count", Object.keys(unlocked).length + " / " + ACHIEVEMENTS.length);
     const wrap = UI.$("#menu-badges");
@@ -343,6 +363,7 @@
     state.correctCount = 0;
     state.wrongCount = 0;
     state.pendingAchievements = [];
+    state.missedRun = [];
     Progress.recordGameStart();
     UI.showScreen("screen-play");
     showQuestion();
@@ -421,6 +442,28 @@
     WORLDS.forEach((w) => w.questions.forEach((q) => pool.push(q)));
     const qs = UI.shuffle(pool).slice(0, GAME_CONFIG.marathonCount);
     startRun({ mode: "marathon", worldId: null, questions: qs });
+  }
+
+  /** Preguntas falladas que siguen existiendo en el contenido, más falladas primero. */
+  function missedQuestions() {
+    const missed = Progress.getMissed();
+    const byId = {};
+    WORLDS.forEach((w) => w.questions.concat(w.boss || []).forEach((q) => { byId[q.id] = q; }));
+    return Object.keys(missed)
+      .filter((id) => byId[id])
+      .sort((a, b) => missed[b] - missed[a])
+      .map((id) => byId[id]);
+  }
+
+  function beginReview() {
+    const qs = missedQuestions();
+    if (!qs.length) {
+      UI.toast("No tienes errores pendientes. ¡Bien!");
+      return;
+    }
+    // Las más falladas entran primero; luego se barajan
+    const pick = UI.shuffle(qs.slice(0, GAME_CONFIG.marathonCount));
+    startRun({ mode: "review", practice: true, worldId: null, questions: pick });
   }
 
   function beginBoss(worldId) {
@@ -821,6 +864,9 @@
     if (hint) hint.disabled = true;
 
     Progress.recordAnswer(ok);
+    const q = currentQ();
+    Progress.recordMissed(q.id, ok);
+    if (!ok) state.missedRun.push(q);
     let gained = 0;
 
     if (ok) {
@@ -902,7 +948,8 @@
 
   function endGame(victory) {
     clearTimer();
-    const isNew = UI.saveHighScore(state.score);
+    // Práctica y Repaso no tienen vidas: no cuentan para el récord
+    const isNew = state.practice ? false : UI.saveHighScore(state.score);
     const world = state.worldId ? getWorldById(state.worldId) : null;
     const levelCleared = !!(victory && state.mode === "campaign" && state.worldId && state.level);
     Progress.recordGameEnd({ victory, mode: state.mode, levelCleared });
@@ -937,6 +984,7 @@
     let titleTxt = victory ? "¡Completado!" : "Game Over";
     if (victory && state.mode === "boss") titleTxt = "¡Boss derrotado!";
     if (victory && state.mode === "marathon") titleTxt = "¡Maratón terminada!";
+    if (victory && state.mode === "review") titleTxt = "¡Repaso terminado!";
     const title = UI.$("#end-title");
     title.textContent = titleTxt;
     title.className = victory ? "ok" : "bad";
@@ -946,6 +994,7 @@
     UI.setText(
       "#end-summary",
       (world ? world.icon + " " + world.name + (state.level ? " · Nivel " + state.level : "") + "\n" : state.mode === "marathon" ? "Maratón mixta\n" : "") +
+        (state.mode === "review" ? "Pendientes por repasar: " + missedQuestions().length + "\n" : "") +
         "Modo: " + (MODE_LABELS[state.mode] || state.mode) +
         "\nPuntuación: " + state.score + (isNew ? " · ¡Nuevo récord!" : "") +
         "\nAciertos: " + state.correctCount + "/" + totalAns + " (" + acc + "%)" +
@@ -953,6 +1002,7 @@
         (state.practice ? "" : " · Vidas: " + Math.max(0, state.lives))
     );
     UI.setText("#end-highscore", String(UI.getHighScore()));
+    renderEndReview();
 
     const unlockEl = UI.$("#end-unlock");
     if (unlockEl) {
@@ -978,6 +1028,24 @@
     else TechAudio.playGameOver();
   }
 
+  function renderEndReview() {
+    const box = UI.$("#end-review");
+    if (!box) return;
+    const list = state.missedRun;
+    box.hidden = !list.length;
+    box.open = false;
+    if (!list.length) return;
+    UI.setText("#end-review-title", "Repasa tus errores (" + list.length + ")");
+    UI.setHTML(
+      "#end-review-list",
+      list.map((q) =>
+        `<li><span class="review-q">${UI.escapeHtml(q.q)}</span>
+          <span class="review-a">✔ ${UI.escapeHtml(correctLabel(q))}</span>
+          <span class="review-e">${UI.escapeHtml(q.explain || "")}</span></li>`
+      ).join("")
+    );
+  }
+
   function renderStats() {
     const s = Progress.getStats();
     const total = s.correct + s.wrong;
@@ -989,6 +1057,7 @@
         <li><strong>Respuestas:</strong> ${s.correct} bien / ${s.wrong} mal (${pct}% acierto)</li>
         <li><strong>Mejor racha:</strong> ${s.bestStreak}</li>
         <li><strong>Pistas usadas:</strong> ${s.hintsUsed}</li>
+        <li><strong>Errores por repasar:</strong> ${missedQuestions().length}</li>
         <li><strong>Maratones ganadas:</strong> ${s.marathonWins}</li>
         <li><strong>Cronómetro ganados:</strong> ${s.timerWins}</li>
         <li><strong>Boss (partidas ganadas):</strong> ${s.bossWins}</li>

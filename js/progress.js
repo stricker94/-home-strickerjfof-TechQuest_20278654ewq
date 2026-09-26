@@ -166,7 +166,36 @@ const Progress = (() => {
     });
   }
 
+  // Preguntas falladas pendientes de repaso: { id: veces fallada }
+  const MISSED_KEY = GAME_CONFIG.storageMissed || "techQuestMissed";
+
+  function getMissed() { return parse(MISSED_KEY, {}); }
+
+  function recordMissed(id, ok) {
+    if (!id) return;
+    const m = getMissed();
+    if (ok) {
+      if (!(id in m)) return;
+      delete m[id];
+    } else {
+      m[id] = (m[id] || 0) + 1;
+    }
+    save(MISSED_KEY, m);
+  }
+
+  function resetAll() {
+    const keys = [
+      GAME_CONFIG.storageKey, GAME_CONFIG.storageUnlocks, GAME_CONFIG.storageAchievements,
+      GAME_CONFIG.storageStats, GAME_CONFIG.storageBoss, LEVELS_KEY, MISSED_KEY,
+      "techQuestCompletedWorlds"
+    ];
+    keys.forEach((k) => {
+      try { localStorage.removeItem(k); } catch (_) {}
+    });
+  }
+
   return {
+    getMissed, recordMissed, resetAll,
     getUnlocks, isUnlocked, unlockWorld, unlockNextAfter,
     getLevelClears, isLevelCleared, markLevelCleared, isLevelUnlocked,
     levelsPerWorld, worldProgressPct, allLevelsCleared, countClearedLevels,

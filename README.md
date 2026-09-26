@@ -10,7 +10,7 @@ Abre `index.html` en el navegador. No necesita servidor, internet ni dependencia
 el progreso se guarda en `localStorage`.
 
 Modos: Aventura, Práctica (sin vidas), Maratón (20 preguntas mezcladas),
-Cronómetro y Boss. Atajos: `1`–`4`, `V`/`F`, `Enter`, `H` (pista), `M` (silencio), `Esc`.
+Cronómetro, Boss y Repasar errores. Atajos: `1`–`4`, `V`/`F`, `Enter`, `H` (pista), `M` (silencio), `Esc`.
 
 ## Estructura
 
