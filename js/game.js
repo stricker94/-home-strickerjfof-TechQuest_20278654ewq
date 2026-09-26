@@ -25,6 +25,7 @@
     wrongCount: 0,
     timeLeft: 0,
     timerId: null,
+    shownAt: 0,
     pendingAchievements: [],
     missedRun: []
   };
@@ -115,6 +116,8 @@
   function onAction(action, el) {
     switch (action) {
       case "mute":
+        // Tras un clic, que Enter no vuelva a activar este botón
+        if (el && typeof el.blur === "function") el.blur();
         TechAudio.toggleMute();
         UI.updateMuteButton();
         TechAudio.playClick();
@@ -478,6 +481,14 @@
 
   function currentQ() { return state.questions[state.qIndex]; }
 
+  /**
+   * Ignora interacciones justo después de mostrar la pregunta: un doble clic
+   * o doble toque en "Continuar" no debe contestar la siguiente por accidente.
+   */
+  function inputLocked() {
+    return state.answered || performance.now() - state.shownAt < 350;
+  }
+
   function clearTimer() {
     if (state.timerId) {
       clearInterval(state.timerId);
@@ -529,6 +540,7 @@
 
   function showQuestion() {
     state.answered = false;
+    state.shownAt = performance.now();
     state.hintUsedThisQ = false;
     state.matchSelections = {};
 
@@ -566,7 +578,7 @@
       submitBtn.hidden = false;
       area.innerHTML = `
         <label class="fill-label" for="fill-input">Tu respuesta:</label>
-        <input id="fill-input" class="fill-input" type="text" autocomplete="off" spellcheck="false"
+        <input id="fill-input" class="fill-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
           placeholder="Escribe aquí…" aria-label="Respuesta" />
         <p class="fill-tip">Mayúsculas flexibles · Enter para enviar</p>`;
       const input = UI.$("#fill-input");
@@ -605,7 +617,7 @@
       btn.dataset.index = String(i);
       btn.innerHTML = `<span class="opt-key">${i + 1}</span><span class="opt-text">${UI.escapeHtml(opt)}</span>`;
       btn.addEventListener("click", () => {
-        if (state.answered) return;
+        if (inputLocked()) return;
         gradeChoice(i);
       });
       wrap.appendChild(btn);
@@ -624,7 +636,7 @@
       btn.dataset.val = val;
       btn.innerHTML = `<span class="opt-key">${key}</span><span class="opt-text">${label}</span>`;
       btn.addEventListener("click", () => {
-        if (state.answered) return;
+        if (inputLocked()) return;
         gradeTF(val === "true");
       });
       wrap.appendChild(btn);
@@ -773,7 +785,7 @@
   }
 
   function submitAnswer() {
-    if (state.answered) return;
+    if (inputLocked()) return;
     const q = currentQ();
     if (q.type === "fill") {
       const raw = (UI.$("#fill-input")?.value || "").trim();
@@ -819,7 +831,17 @@
     finishRound(ok, q.answer ? "Verdadero" : "Falso");
   }
 
-  function norm(s) { return String(s).trim().toLowerCase().replace(/\s+/g, " "); }
+  function norm(s) {
+    return String(s)
+      // Teclados móviles cambian -- por — y las comillas rectas por tipográficas
+      .replace(/\u2014/g, "--")
+      .replace(/\u2013/g, "-")
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201C\u201D]/g, '"')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
+  }
 
   function gradeFill(raw) {
     const q = currentQ();
