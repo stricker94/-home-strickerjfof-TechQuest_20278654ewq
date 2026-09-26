@@ -92,10 +92,10 @@
     "type": "order",
     "q": "Ordena endurecer SSH básico:",
     "items": [
-      "Desactivar root login por password",
-      "Usar claves SSH",
-      "Cambiar/limitar Puerto y AllowUsers",
-      "Reiniciar sshd y probar otra sesión"
+      "Configurar y probar el acceso con claves SSH",
+      "Desactivar el login de root y por contraseña",
+      "Limitar usuarios (AllowUsers) y, si aplica, cambiar el puerto",
+      "Reiniciar sshd y probar en otra sesión sin cerrar la actual"
     ],
     "answer": [
       0,
@@ -103,7 +103,7 @@
       2,
       3
     ],
-    "explain": "Nunca cortes tu única sesión sin probar en paralelo."
+    "explain": "Primero las claves: si desactivas las contraseñas antes, te quedas fuera. Nunca cortes tu única sesión sin probar en paralelo."
   },
   {
     "id": "lxL4g",
@@ -253,7 +253,7 @@
     "type": "mc",
     "q": "¿Qué es WinRM?",
     "options": [
-      "Remoting de administración de Windows ( foreman de PowerShell Remoting )",
+      "Servicio de administración remota de Windows (base de PowerShell Remoting)",
       "Un antivirus",
       "Un protocolo de impresión LPT",
       "Una VLAN"
@@ -415,7 +415,7 @@
     "type": "identify",
     "q": "Herramienta para capturar tráfico en Windows (Microsoft):",
     "options": [
-      "netsh trace / Message Analyzer legacy / pktmon",
+      "pktmon / netsh trace",
       "mspaint",
       "Notepad",
       "calc"
@@ -471,7 +471,7 @@
     "id": "prL4a",
     "level": 4,
     "type": "mc",
-    "q": "Un print server centralizado tipicamente…",
+    "q": "Un print server centralizado típicamente…",
     "options": [
       "Hospeda colas compartidas y drivers para muchos clientes",
       "Solo imprime PDFs locales sin red",
@@ -1209,7 +1209,7 @@
     "type": "identify",
     "q": "Patrón para desacoplar productores/consumidores:",
     "options": [
-      "Cola / message broker (p.ej. Rabbit/Kafka ideas)",
+      "Cola / message broker (p. ej. RabbitMQ o Kafka)",
       "Solo variables globales",
       "Solo busy-wait",
       "Solo GOTO"
@@ -1844,7 +1844,7 @@
     "id": "hwL5c",
     "level": 5,
     "type": "fill",
-    "q": "Interfaz de gestión remota Dell common (sigla 5 letras):",
+    "q": "Interfaz de gestión remota de servidores Dell (sigla de 5 letras):",
     "answer": "iDRAC",
     "accept": ["iDRAC"],
     "explain": "Integrated Dell Remote Access Controller."
@@ -2071,7 +2071,7 @@
       "id": "cl13",
       "level": 2,
       "type": "mc",
-      "q": "Un snapshot/AMI tipicamente sirve para…",
+      "q": "Un snapshot/AMI típicamente sirve para…",
       "options": [
         "Capturar estado de disco/VM para backup o clon",
         "Calibrar monitores",
@@ -2848,7 +2848,7 @@
       "id": "db23",
       "level": 3,
       "type": "tf",
-      "q": "Una transacción ACID o todo se confirma o se revierte.",
+      "q": "En una transacción ACID, o todo se confirma o todo se revierte.",
       "answer": true,
       "explain": "Atomicity Consistency Isolation Durability."
     },

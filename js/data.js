@@ -250,7 +250,7 @@ const WORLDS = [
       {
         id: "wn10",
         type: "fill",
-        q: "Comando para ver rutas DNS y liberar/renovar DHCP (libera):",
+        q: "Comando para liberar la IP asignada por DHCP en Windows:",
         answer: "ipconfig /release",
         accept: ["ipconfig /release", "ipconfig /release *"],
         explain: "Después suele usarse ipconfig /renew. /flushdns limpia la caché DNS."

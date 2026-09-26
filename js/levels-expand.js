@@ -75,7 +75,7 @@
       { left: "diskmgmt.msc", right: "Administrar discos/particiones" },
       { left: "devmgmt.msc", right: "Administrador de dispositivos" },
       { left: "eventvwr.msc", right: "Visor de eventos" },
-      { left: " Lusrmgr.msc", right: "Usuarios y grupos locales" }
+      { left: "lusrmgr.msc", right: "Usuarios y grupos locales" }
     ], explain: "Las consolas .msc aceleran la administración." }
   ]);
 
@@ -90,7 +90,7 @@
     { id: "prL2c", level: 2, type: "order", q: "Ordena agregar impresora TCP/IP:", items: ["Obtener IP de la impresora", "Ping a la IP", "Crear puerto TCP/IP o IPP", "Instalar driver y página de prueba"], answer: [0, 1, 2, 3], explain: "Valida red antes de pelear con drivers." },
     { id: "prL2d", level: 2, type: "mc", q: "SNMP en impresoras de red sirve para…", options: ["Monitorear estado (tóner, bandejas, errores)", "Reemplazar al cable USB siempre", "Cifrar el disco del PC", "Compilar el kernel"], answer: 0, explain: "Muchas consolas de flota leen OID SNMP del dispositivo." },
     { id: "prL2e", level: 2, type: "tf", q: "Un print server puede desplegar drivers a clientes vía point-and-print (con políticas adecuadas).", answer: true, explain: "En dominio facilita estandarizar modelos; revisa restricciones de seguridad modernas." },
-    { id: "prL3a", level: 3, type: "mc", q: "AirPrint tipicamente se apoya en…", options: ["mDNS/Bonjour + IPP", "Solo LPT1", "Solo RDP", "Solo WEP"], answer: 0, explain: "Dispositivos Apple descubren la impresora y hablan IPP." },
+    { id: "prL3a", level: 3, type: "mc", q: "AirPrint típicamente se apoya en…", options: ["mDNS/Bonjour + IPP", "Solo LPT1", "Solo RDP", "Solo WEP"], answer: 0, explain: "Dispositivos Apple descubren la impresora y hablan IPP." },
     { id: "prL3b", level: 3, type: "scenario", q: "Print server imprime a 9100 pero clientes SMB ven acceso denegado. Enfoque:", options: ["Permisos del share/seguridad de impresora + grupos", "Solo cambiar tóner", "Subir la resolución del monitor", "Desactivar Spooler del server"], answer: 0, explain: "Capa de red al dispositivo OK; falla autorización SMB/NTFS/share." },
     { id: "prL3c", level: 3, type: "match", q: "Empareja PDL/idea:", pairs: [
       { left: "PCL", right: "Lenguaje típico HP / amplio en oficina" },
@@ -180,7 +180,7 @@
       { id: "sec02", level: 1, type: "tf", q: "Una contraseña larga y única por sitio es mejor que reutilizar '123456'.", answer: true, explain: "Usa gestor de contraseñas + MFA." },
       { id: "sec03", level: 1, type: "mc", q: "MFA significa…", options: ["Autenticación multifactor", "Mainframe File Access", "Media Format Adapter", "Mail From Admin"], answer: 0, explain: "Algo que sabes + tienes / eres." },
       { id: "sec04", level: 1, type: "identify", q: "Señal típica de phishing por correo:", options: ["Urgencia + enlace sospechoso + remitente raro", "Firma digital válida siempre", "Solo texto sin links de RRHH legítimo", "Adjunto .txt de README interno"], answer: 0, explain: "Verifica dominio, hover del link y canales oficiales." },
-      { id: "sec05", level: 1, type: "fill", q: "Sigla de software malicioso (inglés corto):", answer: "malware", accept: ["malware", "Malware"], explain: "Malware incluye virus, troyanos, ransomware, spyware…" },
+      { id: "sec05", level: 1, type: "fill", q: "Término en inglés para software malicioso (una palabra):", answer: "malware", accept: ["malware", "Malware"], explain: "Malware incluye virus, troyanos, ransomware, spyware…" },
       { id: "sec06", level: 1, type: "mc", q: "Actualizar el sistema y apps ayuda a…", options: ["Cerrar vulnerabilidades conocidas", "Borrar la RAM físicamente", "Cambiar la VLAN sola", "Imprimir más rápido siempre"], answer: 0, explain: "Parches corrigen fallos explotables." },
       { id: "sec07", level: 1, type: "tf", q: "HTTPS ayuda a cifrar el tráfico entre tu navegador y el sitio.", answer: true, explain: "No garantiza que el sitio sea confiable al 100%, pero protege en tránsito." },
       { id: "sec08", level: 1, type: "scenario", q: "Te llaman 'de TI' pidiendo tu contraseña. ¿Qué haces?", options: ["No la des; verifica por canal oficial", "Se la dictas", "La envías por WhatsApp", "La pegas en un foro"], answer: 0, explain: "Soporte legítimo no pide tu password." },
@@ -190,7 +190,7 @@
       { id: "sec11", level: 2, type: "mc", q: "El ransomware típicamente…", options: ["Cifra archivos y pide rescate", "Mejora el FPS", "Optimiza DNS", "Calibra colores"], answer: 0, explain: "Backups offline/inmutables son críticos." },
       { id: "sec12", level: 2, type: "scenario", q: "USB desconocido en el estacionamiento. Acción correcta:", options: ["No conectarlo; reportar", "Probarlo en el DC", "Abrirlo en finanzas", "Instalar drivers del USB"], answer: 0, explain: "USB baiting es un vector real." },
       { id: "sec13", level: 2, type: "mc", q: "Principio de mínimo privilegio significa…", options: ["Dar solo los permisos necesarios para la tarea", "Dar admin a todos", "Desactivar logs", "Compartir root"], answer: 0, explain: "Reduce el blast radius de una cuenta comprometida." },
-      { id: "sec14", level: 2, type: "tf", q: "Un VPN corporativo cifra el tráfico hacia la red de la empresa.", answer: true, explain: "Útil en Wi‑Fi públicos; no sustituye buen juicio." },
+      { id: "sec14", level: 2, type: "tf", q: "Una VPN corporativa cifra el tráfico hacia la red de la empresa.", answer: true, explain: "Útil en Wi‑Fi públicos; no sustituye buen juicio." },
       { id: "sec15", level: 2, type: "fill", q: "Ataque que satura un servicio para tumbarlo (sigla):", answer: "DDoS", accept: ["DDoS", "ddos", "DoS", "dos"], explain: "Denial of Service / Distributed DoS." },
       { id: "sec16", level: 2, type: "match", q: "Empareja amenaza:", pairs: [
         { left: "Phishing", right: "Engaño para robar datos" },
@@ -224,7 +224,7 @@
       { id: "secB2", level: 3, type: "mc", q: "BOSS: Ransomware en un file share. Prioridad:", options: ["Aislar hosts, preservar evidencias, restaurar desde backup limpio", "Pagar sin investigar siempre", "Subir el share a Internet", "Desactivar logs"], answer: 0, explain: "Contención y recuperación probada." },
       { id: "secB3", level: 3, type: "order", q: "BOSS: Cuenta admin comprometida:", items: ["Deshabilitar/resetear cuenta", "Revisar accesos y tokens", "Auditar cambios realizados", "Rotar secretos relacionados"], answer: [0, 1, 2, 3], explain: "Corta el acceso antes de investigar a fondo." },
       { id: "secB4", level: 3, type: "tf", q: "BOSS: El logging centralizado ayuda a detectar y investigar incidentes.", answer: true, explain: "SIEM/consultas correlacionan eventos." },
-      { id: "secB5", level: 3, type: "fill", q: "BOSS: Factor 'algo que tienes' en MFA (ejemplo corto: app o …):", answer: "token", accept: ["token", "llave", "key", "app", "telefono", "teléfono", "otp"], explain: "Token/app/llave física complementan la password." }
+      { id: "secB5", level: 3, type: "fill", q: "BOSS: Factor 'algo que tienes' en MFA (ejemplo corto: app o …):", answer: "token", accept: ["token", "llave", "llave física", "llave fisica", "llave de seguridad", "security key", "yubikey", "key", "app", "telefono", "teléfono", "celular", "móvil", "movil", "smartphone", "tarjeta", "smartcard", "otp", "totp", "fido2"], explain: "Token/app/llave física complementan la password." }
     ]
   });
 
@@ -253,7 +253,7 @@
       { id: "hw15", level: 2, type: "fill", q: "Sigla del firmware de arranque clásico anterior a UEFI:", answer: "BIOS", accept: ["BIOS", "bios"], explain: "Basic Input/Output System." },
       { id: "hw16", level: 2, type: "match", q: "Empareja puerto:", pairs: [
         { left: "RJ-45", right: "Red Ethernet" },
-        { left: "SATA", right: "Discos/Optical legacy-ish" },
+        { left: "SATA", right: "Discos y unidades ópticas" },
         { left: "PCIe", right: "Slots de expansión (GPU, etc.)" },
         { left: "Socket CPU", right: "Encaje del procesador" }
       ], explain: "Identificar conectores evita daños." },
