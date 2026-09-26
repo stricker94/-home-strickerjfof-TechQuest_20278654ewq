@@ -16,3 +16,20 @@ jobs:
         run: for f in js/*.js tools/*.js; do node --check "$f"; done
       - name: Validar preguntas
         run: node tools/validate-content.js
+
+  e2e:
+    name: Jugar en Chromium
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Instalar Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Pruebas de extremo a extremo
+        run: node tools/e2e.js

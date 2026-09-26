@@ -1,0 +1,12 @@
+{
+  "name": "tech-quest",
+  "private": true,
+  "description": "Juego educativo de IT (es-MX). No requiere compilación: abre index.html.",
+  "scripts": {
+    "validate": "node tools/validate-content.js",
+    "test": "node tools/validate-content.js && node tools/e2e.js"
+  },
+  "devDependencies": {
+    "playwright": "1.56.1"
+  }
+}
