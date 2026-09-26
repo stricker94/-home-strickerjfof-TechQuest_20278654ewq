@@ -28,6 +28,7 @@ const CHOICE = ["mc", "identify", "scenario"];
 const TYPES = new Set(CHOICE.concat(["tf", "fill", "match", "order"]));
 const errors = [];
 const seen = {};
+const seenText = {};
 const err = (where, msg) => errors.push(where + ": " + msg);
 const distinct = (arr) => new Set(arr).size === arr.length;
 
@@ -41,6 +42,11 @@ WORLDS.forEach((w) => {
     else seen[q.id] = where;
     if (!TYPES.has(q.type)) err(where, "tipo desconocido " + q.type);
     if (!q.q) err(where, "sin enunciado");
+    else {
+      const key = q.q.trim().toLowerCase();
+      if (seenText[key]) err(where, "enunciado repetido (también en " + seenText[key] + ")");
+      else seenText[key] = where;
+    }
     if (!q.explain) err(where, "sin explicación");
     if (!(Number.isInteger(q.level) && q.level >= 1 && q.level <= maxL)) err(where, "nivel inválido " + q.level);
     if (!isBoss) perLevel[q.level] = (perLevel[q.level] || 0) + 1;

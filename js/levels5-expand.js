@@ -109,7 +109,7 @@
     "id": "lxL4g",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada herramienta de administración Linux con su uso:",
     "pairs": [
       {
         "left": "crontab -e",
@@ -310,7 +310,7 @@
     "id": "wnL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada consola MMC de Windows con su función:",
     "pairs": [
       {
         "left": "rsop.msc",
@@ -530,7 +530,7 @@
     "id": "prL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada elemento del sistema de impresión con su descripción:",
     "pairs": [
       {
         "left": "PCL",
@@ -817,7 +817,7 @@
     "id": "netL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada protocolo o técnica de red con su función:",
     "pairs": [
       {
         "left": "OSPF",
@@ -1104,7 +1104,7 @@
     "id": "pgL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada práctica de calidad de código con su definición:",
     "pairs": [
       {
         "left": "Unit test",
@@ -1324,7 +1324,7 @@
     "id": "suL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada término de gestión de servicio con su significado:",
     "pairs": [
       {
         "left": "P1",
@@ -1544,7 +1544,7 @@
     "id": "secL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada control de seguridad con su función:",
     "pairs": [
       {
         "left": "SIEM",
@@ -1764,7 +1764,7 @@
     "id": "hwL4f",
     "level": 4,
     "type": "match",
-    "q": "Empareja:",
+    "q": "Empareja cada interfaz o módulo de hardware con su descripción:",
     "pairs": [
       {
         "left": "SAS",
@@ -2085,7 +2085,7 @@
       "id": "cl14",
       "level": 2,
       "type": "match",
-      "q": "Empareja:",
+      "q": "Empareja cada modelo de servicio cloud con lo que ofrece:",
       "pairs": [
         {
           "left": "SaaS",
@@ -2188,7 +2188,7 @@
       "id": "cl21",
       "level": 3,
       "type": "match",
-      "q": "Empareja:",
+      "q": "Empareja cada estrategia de recuperación ante desastres con su descripción:",
       "pairs": [
         {
           "left": "Warm standby",
@@ -2313,7 +2313,7 @@
       "id": "cl30",
       "level": 4,
       "type": "match",
-      "q": "Empareja:",
+      "q": "Empareja cada concepto de red en la nube con su significado:",
       "pairs": [
         {
           "left": "Egress",
@@ -2701,7 +2701,7 @@
       "id": "db14",
       "level": 2,
       "type": "match",
-      "q": "Empareja:",
+      "q": "Empareja cada comando SQL con su operación CRUD:",
       "pairs": [
         {
           "left": "SELECT",
@@ -2804,7 +2804,7 @@
       "id": "db21",
       "level": 3,
       "type": "match",
-      "q": "Empareja:",
+      "q": "Empareja cada concepto de bases de datos con su definición:",
       "pairs": [
         {
           "left": "OLTP",
@@ -2929,7 +2929,7 @@
       "id": "db30",
       "level": 4,
       "type": "match",
-      "q": "Empareja:",
+      "q": "Empareja cada tarea de operación de bases de datos con su propósito:",
       "pairs": [
         {
           "left": "VACUUM (PG idea)",

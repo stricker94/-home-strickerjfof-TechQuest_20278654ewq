@@ -44,11 +44,12 @@
     refreshMenu();
     UI.showScreen("screen-menu");
     UI.updateMuteButton();
-    TechAudio.unlock();
   }
 
   function bindEvents() {
+    // El audio solo puede arrancar tras un gesto del usuario (clic, toque o tecla)
     document.addEventListener("pointerdown", () => TechAudio.unlock(), { passive: true });
+    document.addEventListener("keydown", () => TechAudio.unlock());
 
     document.body.addEventListener("click", (e) => {
       const t = e.target.closest("[data-action]");
