@@ -36,4 +36,18 @@ Antes de subir cambios, valida el contenido:
 node tools/validate-content.js
 ```
 
-El mismo chequeo corre en GitHub Actions en cada push y pull request.
+## Pruebas
+
+`tools/e2e.js` abre el juego en Chromium y lo juega de verdad: responde las 540
+preguntas (todos los niveles y todos los Boss), recorre Aventura, Repaso de errores
+y Borrar progreso, y revisa casos límite que ya causaron bugs (Enter, doble toque,
+teclados móviles, datos guardados dañados).
+
+```sh
+npm install
+npx playwright install chromium
+npm test            # validador + todas las pruebas
+node tools/e2e.js quick   # omite el barrido de 540 preguntas
+```
+
+Ambos chequeos corren en GitHub Actions en cada push y pull request.
