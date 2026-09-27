@@ -565,7 +565,9 @@
     const hintBtn = UI.$("#btn-hint");
     if (hintBtn) {
       hintBtn.hidden = state.practice;
-      hintBtn.disabled = state.hintsLeft <= 0;
+      // En Verdadero/Falso una pista revelaría la respuesta: no se ofrece ni se cobra
+      hintBtn.disabled = state.hintsLeft <= 0 || q.type === "tf";
+      hintBtn.title = q.type === "tf" ? "Sin pista en Verdadero / Falso" : "";
     }
     if (submitBtn) submitBtn.disabled = false;
 
@@ -742,19 +744,22 @@
     }
     area.innerHTML = `<p class="order-help">Ordena con ▲ ▼ (arriba = primero).</p>`;
     area.appendChild(list);
+    state.paintOrder = paint;
     paint();
   }
 
   function useHint() {
     if (state.answered || state.hintsLeft <= 0 || state.hintUsedThisQ || state.practice) return;
+    if (currentQ().type === "tf") return;
     TechAudio.playClick();
     state.hintsLeft--;
     state.hintsUsedRun++;
     state.hintUsedThisQ = true;
     Progress.recordHint();
     UI.updateHUD(hud());
+    // Una pista por pregunta: el botón queda deshabilitado hasta la siguiente
     const hintBtn = UI.$("#btn-hint");
-    if (hintBtn) hintBtn.disabled = state.hintsLeft <= 0;
+    if (hintBtn) hintBtn.disabled = true;
 
     const q = currentQ();
     const box = UI.$("#hint-box");
@@ -770,8 +775,6 @@
         btn.disabled = true;
         btn.classList.add("eliminated");
       }
-    } else if (q.type === "tf") {
-      tip = "Pista: revisa la definición estándar del concepto.";
     } else if (q.type === "fill") {
       const ans = String(q.answer);
       const n = Math.max(1, Math.min(4, Math.floor(ans.length / 2)));
@@ -784,7 +787,10 @@
       state.matchSelections[0] = 0;
       paintMatch();
     } else if (q.type === "order") {
-      tip = "Pista: el primero es «" + q.items[q.answer[0]] + "».";
+      tip = "Pista: el primero es «" + q.items[q.answer[0]] + "» (ya lo subí).";
+      const at = state.orderItems.findIndex((x) => x.orig === q.answer[0]);
+      state.orderItems.unshift(state.orderItems.splice(at, 1)[0]);
+      if (state.paintOrder) state.paintOrder();
     }
     box.textContent = tip;
   }
