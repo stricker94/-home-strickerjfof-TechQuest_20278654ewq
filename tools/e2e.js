@@ -402,6 +402,40 @@ async function testPauseAndFocus(browser) {
   await page.close();
 }
 
+async function testKeyboardScreens(browser) {
+  console.log("Foco al cambiar de pantalla con teclado");
+  const page = await newPage(browser);
+  const focused = () => page.evaluate(() => {
+    const a = document.activeElement;
+    return a ? a.id || a.getAttribute("data-level") || a.getAttribute("data-world") || a.tagName : null;
+  });
+  await page.focus("#screen-menu [data-action=practice]");
+  await page.keyboard.press("Enter");
+  check((await focused()) === "worlds-title", "al elegir modo el foco pasa al título de Mundos");
+  await page.keyboard.press("Tab");
+  check((await focused()) === "linux", "Tab lleva al primer mundo");
+  await page.keyboard.press("Enter");
+  check((await focused()) === "levels-title", "al elegir mundo el foco pasa al título de Niveles");
+  await page.keyboard.press("Tab");
+  check((await focused()) === "1", "Tab lleva al nivel 1");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(HUMAN_DELAY);
+  const f = await focused();
+  check(f === "question-text" || f === "fill-input", "al empezar el foco queda en la pregunta (" + f + ")");
+  await answerCorrectly(page, await currentQuestion(page));
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(HUMAN_DELAY);
+  const f2 = await focused();
+  check(f2 === "question-text" || f2 === "fill-input", "tras Continuar el foco queda en la nueva pregunta (" + f2 + ")");
+  // El botón de sonido está fuera de las pantallas: no se le quita el foco
+  await page.focus("#btn-mute");
+  await page.evaluate(() => UI.showScreen("screen-play"));
+  check((await focused()) === "btn-mute", "no roba el foco del botón de sonido");
+  check((await page.getAttribute("#hud-timer-wrap", "aria-live")) === "off", "el cronómetro no se anuncia cada segundo");
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
 (async () => {
   const browser = await chromium.launch(
     process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
@@ -411,6 +445,7 @@ async function testPauseAndFocus(browser) {
     await testReviewAndReset(browser);
     await testEdgeCases(browser);
     await testPauseAndFocus(browser);
+    await testKeyboardScreens(browser);
     if (!QUICK) await testFullSweep(browser);
   } finally {
     await browser.close();
