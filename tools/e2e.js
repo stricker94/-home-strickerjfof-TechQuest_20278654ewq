@@ -402,6 +402,85 @@ async function testPauseAndFocus(browser) {
   await page.close();
 }
 
+async function testKeyboardScreens(browser) {
+  console.log("Foco al cambiar de pantalla con teclado");
+  const page = await newPage(browser);
+  const focused = () => page.evaluate(() => {
+    const a = document.activeElement;
+    return a ? a.id || a.getAttribute("data-level") || a.getAttribute("data-world") || a.tagName : null;
+  });
+  await page.focus("#screen-menu [data-action=practice]");
+  await page.keyboard.press("Enter");
+  check((await focused()) === "worlds-title", "al elegir modo el foco pasa al título de Mundos");
+  await page.keyboard.press("Tab");
+  check((await focused()) === "linux", "Tab lleva al primer mundo");
+  await page.keyboard.press("Enter");
+  check((await focused()) === "levels-title", "al elegir mundo el foco pasa al título de Niveles");
+  await page.keyboard.press("Tab");
+  check((await focused()) === "1", "Tab lleva al nivel 1");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(HUMAN_DELAY);
+  const f = await focused();
+  check(f === "question-text" || f === "fill-input", "al empezar el foco queda en la pregunta (" + f + ")");
+  await answerCorrectly(page, await currentQuestion(page));
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(HUMAN_DELAY);
+  const f2 = await focused();
+  check(f2 === "question-text" || f2 === "fill-input", "tras Continuar el foco queda en la nueva pregunta (" + f2 + ")");
+  // El botón de sonido está fuera de las pantallas: no se le quita el foco
+  await page.focus("#btn-mute");
+  await page.evaluate(() => UI.showScreen("screen-play"));
+  check((await focused()) === "btn-mute", "no roba el foco del botón de sonido");
+  check((await page.getAttribute("#hud-timer-wrap", "aria-live")) === "off", "el cronómetro no se anuncia cada segundo");
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
+async function testHints(browser) {
+  console.log("Pistas por tipo de pregunta");
+  const page = await newPage(browser);
+  const hints = async () => parseInt(await page.textContent("#hud-hints"), 10);
+  // Buscar una pregunta de V/F y una de ordenar en modos con pistas
+  let sawTF = false, sawOrder = false;
+  for (const world of ["linux", "windows", "networking", "printers"]) {
+    if (sawTF && sawOrder) break;
+    const levels = await page.evaluate((w) => [...new Set(getWorldById(w).questions.map((q) => q.level || 1))], world);
+    for (const L of levels) {
+      if (sawTF && sawOrder) break;
+      // Práctica oculta las pistas; se juega el mismo nivel en Cronómetro sin límite de tiempo
+      await goMenu(page);
+      await page.click("#screen-menu [data-action=timer]");
+      await page.click(`[data-world=${world}]`);
+      await page.click(`[data-level="${L}"]`);
+      await page.evaluate(() => { GAME_CONFIG.timerSeconds = 9999; });
+      while (await isActive(page, "screen-play")) {
+        await page.waitForTimeout(HUMAN_DELAY);
+        const q = await currentQuestion(page);
+        if (q.type === "tf" && !sawTF) {
+          sawTF = true;
+          const before = await hints();
+          check(await page.$eval("#btn-hint", (e) => e.disabled), "V/F: el botón de pista está deshabilitado");
+          await page.keyboard.press("h");
+          check((await hints()) === before && (await page.$eval("#hint-box", (e) => e.hidden)), "V/F: la tecla H no gasta una pista");
+        } else if (q.type === "order" && !sawOrder && (await hints()) > 0) {
+          sawOrder = true;
+          const before = await hints();
+          await page.click("#btn-hint");
+          const first = await page.$eval(".order-text", (e) => e.textContent);
+          check(first === q.items[q.answer[0]], "Ordenar: la pista sube el primer paso");
+          check((await hints()) === before - 1, "Ordenar: la pista cuesta una");
+          check(await page.$eval("#btn-hint", (e) => e.disabled), "tras usar la pista el botón queda deshabilitado");
+        }
+        await answerCorrectly(page, q);
+        await page.keyboard.press("Enter");
+      }
+    }
+  }
+  check(sawTF && sawOrder, "se encontraron preguntas de V/F y de ordenar");
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
 (async () => {
   const browser = await chromium.launch(
     process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
@@ -411,6 +490,8 @@ async function testPauseAndFocus(browser) {
     await testReviewAndReset(browser);
     await testEdgeCases(browser);
     await testPauseAndFocus(browser);
+    await testKeyboardScreens(browser);
+    await testHints(browser);
     if (!QUICK) await testFullSweep(browser);
   } finally {
     await browser.close();

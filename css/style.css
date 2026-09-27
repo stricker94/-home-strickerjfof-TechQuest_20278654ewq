@@ -109,6 +109,9 @@ body {
   outline-offset: 2px;
 }
 
+/* Títulos que reciben el foco al cambiar de pantalla: sin recuadro */
+[tabindex="-1"]:focus { outline: none; }
+
 .btn-primary {
   background: linear-gradient(135deg, #0a3d36, #0d4a5c);
   border-color: var(--accent);

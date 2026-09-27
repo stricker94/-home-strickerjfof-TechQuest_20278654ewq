@@ -15,6 +15,18 @@ const UI = (() => {
         el.classList.add("screen-enter");
       }
     });
+    // Si el foco quedó en la pantalla que se ocultó, llévalo al título de la
+    // nueva: con teclado o lector de pantalla no se pierde el lugar.
+    const screen = $("#" + id);
+    const active = document.activeElement;
+    const lost = !active || active === document.body || (active.closest(".screen") && !active.closest(".screen.active"));
+    if (screen && lost) {
+      const target = screen.querySelector("h1, h2, #question-text");
+      if (target) {
+        target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+      }
+    }
   }
 
   function setText(sel, text) {
