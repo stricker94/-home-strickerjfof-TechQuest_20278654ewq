@@ -336,6 +336,72 @@ async function testEdgeCases(browser) {
   await broken.close();
 }
 
+/** Simula que el jugador cambia de pestaña o de app (true) y que vuelve (false). */
+function setHidden(page, hidden) {
+  return page.evaluate((h) => {
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => h });
+    Object.defineProperty(document, "visibilityState", { configurable: true, get: () => (h ? "hidden" : "visible") });
+    document.dispatchEvent(new Event("visibilitychange"));
+  }, hidden);
+}
+
+async function testPauseAndFocus(browser) {
+  console.log("Cronómetro en segundo plano y foco al ordenar");
+  const page = await newPage(browser);
+  const seconds = async () => parseInt(await page.textContent("#hud-timer"), 10);
+
+  for (const [mode, label] of [["timer", "Cronómetro"], ["boss", "Boss"]]) {
+    await goMenu(page);
+    await page.click(`#screen-menu [data-action=${mode}]`);
+    await page.click("[data-world=linux]");
+    if (mode === "timer") await page.click('[data-level="1"]');
+    await page.waitForTimeout(1100);
+    await setHidden(page, true);
+    const hiddenAt = await seconds();
+    await page.waitForTimeout(3200);
+    check((await seconds()) === hiddenAt && (await isActive(page, "screen-play")), `${label}: el tiempo se pausa con la pestaña oculta`);
+    await setHidden(page, false);
+    await page.waitForTimeout(2200);
+    const now = await seconds();
+    check(now < hiddenAt && now >= hiddenAt - 3, `${label}: el tiempo sigue al volver (${hiddenAt}s → ${now}s)`);
+  }
+
+  // Mover un paso con el teclado deja el foco en ese paso
+  const target = await page.evaluate(() => {
+    for (const w of WORLDS) for (const q of w.questions) if (q.type === "order" && q.items.length >= 4) return { world: w.id, level: q.level || 1, id: q.id };
+    return null;
+  });
+  await goMenu(page);
+  await page.click("#screen-menu [data-action=practice]");
+  await page.click(`[data-world=${target.world}]`);
+  await page.click(`[data-level="${target.level}"]`);
+  if (await playUntil(page, target.id)) {
+    const focusedStep = () => page.evaluate(() => {
+      const b = document.activeElement;
+      const li = b && b.closest(".order-item");
+      return li ? { idx: [...li.parentNode.children].indexOf(li), text: li.querySelector(".order-text").textContent, dir: b.dataset.dir } : null;
+    });
+    const texts = () => page.$$eval(".order-text", (els) => els.map((e) => e.textContent));
+    const start = await texts();
+    await page.focus('.icon-btn[data-dir="1"][data-idx="0"]');
+    await page.keyboard.press("Enter");
+    let f = await focusedStep();
+    check(f && f.idx === 1 && f.text === start[0] && f.dir === "1", "tras bajar un paso el foco sigue en ▼ de ese paso");
+    await page.keyboard.press("Space");
+    f = await focusedStep();
+    check(f && f.idx === 2 && f.text === start[0], "se puede seguir bajándolo sin volver a navegar");
+    // Subirlo hasta arriba: ▲ queda deshabilitado y el foco pasa a ▼
+    await page.keyboard.press("Shift+Tab");
+    for (let i = 0; i < 2; i++) await page.keyboard.press("Enter");
+    f = await focusedStep();
+    check(f && f.idx === 0 && f.text === start[0] && f.dir === "1", "al llegar arriba el foco pasa a ▼ del mismo paso");
+  } else {
+    check(false, "no se encontró la pregunta " + target.id);
+  }
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
 (async () => {
   const browser = await chromium.launch(
     process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
@@ -344,6 +410,7 @@ async function testEdgeCases(browser) {
     await testCampaign(browser);
     await testReviewAndReset(browser);
     await testEdgeCases(browser);
+    await testPauseAndFocus(browser);
     if (!QUICK) await testFullSweep(browser);
   } finally {
     await browser.close();

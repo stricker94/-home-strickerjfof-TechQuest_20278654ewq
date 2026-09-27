@@ -524,7 +524,8 @@
       state.mode === "boss" ? GAME_CONFIG.bossTimerSeconds : GAME_CONFIG.timerSeconds;
     UI.updateHUD(hud());
     state.timerId = setInterval(() => {
-      if (state.answered) return;
+      // Con la pestaña oculta (llamada, notificación, otra app) el tiempo se pausa
+      if (state.answered || document.hidden) return;
       state.timeLeft--;
       if (state.timeLeft > 0 && state.timeLeft <= 5) {
         if (state.timeLeft <= 3) TechAudio.playUrgentTick();
@@ -732,6 +733,10 @@
           state.orderItems[idx] = state.orderItems[j];
           state.orderItems[j] = tmp;
           paint();
+          // El foco sigue al paso movido; si llegó a un extremo, pasa a la otra flecha
+          const moved = list.querySelectorAll(".order-item")[j];
+          const same = moved.querySelector(`[data-dir="${btn.dataset.dir}"]`);
+          (same.disabled ? moved.querySelector("[data-dir]:not(:disabled)") : same).focus();
         });
       });
     }
