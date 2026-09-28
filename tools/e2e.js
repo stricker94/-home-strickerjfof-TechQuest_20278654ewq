@@ -465,9 +465,10 @@ async function testHints(browser) {
         } else if (q.type === "order" && !sawOrder && (await hints()) > 0) {
           sawOrder = true;
           const before = await hints();
+          const k = await orderMismatch(page, q);
           await page.click("#btn-hint");
-          const first = await page.$eval(".order-text", (e) => e.textContent);
-          check(first === q.items[q.answer[0]], "Ordenar: la pista sube el primer paso");
+          const placed = await page.$$eval(".order-text", (els) => els.map((e) => e.textContent));
+          check(placed[k] === q.items[q.answer[k]] && (await orderMismatch(page, q)) !== k, "Ordenar: la pista coloca el primer paso fuera de lugar");
           check((await hints()) === before - 1, "Ordenar: la pista cuesta una");
           check(await page.$eval("#btn-hint", (e) => e.disabled), "tras usar la pista el botón queda deshabilitado");
         }
@@ -513,6 +514,73 @@ async function testLeaveGuard(browser) {
   await page.close();
 }
 
+/** Primera posición de una pregunta de ordenar que no tiene su paso correcto (-1 si todo está bien). */
+async function orderMismatch(page, q) {
+  const texts = await page.$$eval(".order-text", (els) => els.map((e) => e.textContent));
+  return q.answer.findIndex((v, k) => texts[k] !== q.items[v]);
+}
+
+/** Mueve pasos con ▲ hasta dejar bien las primeras n posiciones. */
+async function orderFirst(page, q, n) {
+  for (let pos = 0; pos < n; pos++) {
+    const want = q.items[q.answer[pos]];
+    for (;;) {
+      const texts = await page.$$eval(".order-text", (els) => els.map((e) => e.textContent));
+      const at = texts.indexOf(want);
+      if (at === pos) break;
+      await page.click(`.icon-btn[data-dir="-1"][data-idx="${at}"]`);
+    }
+  }
+}
+
+async function testHintTargets(browser) {
+  console.log("La pista revela lo que falta, no lo ya resuelto");
+  const page = await newPage(browser);
+  const hints = async () => parseInt(await page.textContent("#hud-hints"), 10);
+  const seen = {};
+  const worlds = await page.evaluate(() => WORLDS.map((w) => w.id));
+  outer: for (const world of worlds) {
+    for (let L = 1; L <= 5; L++) {
+      if (seen.orderPartial && seen.orderSolved && seen.matchPartial) break outer;
+      await goMenu(page);
+      await page.click("#screen-menu [data-action=timer]");
+      await page.click(`[data-world=${world}]`);
+      await page.click(`[data-level="${L}"]`);
+      await page.evaluate(() => { GAME_CONFIG.timerSeconds = 9999; });
+      while (await isActive(page, "screen-play")) {
+        await page.waitForTimeout(HUMAN_DELAY);
+        const q = await currentQuestion(page);
+        const left = await hints();
+        if (q.type === "order" && !seen.orderSolved) {
+          seen.orderSolved = true;
+          await orderFirst(page, q, q.answer.length);
+          await page.click("#btn-hint");
+          check((await hints()) === left && (await page.$eval("#hint-box", (e) => e.hidden)), "Ordenar ya resuelto: la pista no se cobra");
+        } else if (q.type === "order" && !seen.orderPartial && left > 0 && (await orderFirst(page, q, 1), await orderMismatch(page, q)) > 0) {
+          // Solo cuenta si tras acomodar el primer paso aún falta alguno
+          seen.orderPartial = true;
+          const k = await orderMismatch(page, q);
+          await page.click("#btn-hint");
+          const tip = await page.textContent("#hint-box");
+          check(k > 0 && tip.includes("paso " + (k + 1)) && (await orderMismatch(page, q)) !== k, `Ordenar con el primer paso bien: la pista coloca el paso ${k + 1}`);
+        } else if (q.type === "match" && !seen.matchPartial && left > 0) {
+          seen.matchPartial = true;
+          await page.click('.match-item[data-side=left][data-i="0"]');
+          await page.click('.match-item[data-side=right][data-i="0"]');
+          await page.click("#btn-hint");
+          const tip = await page.textContent("#hint-box");
+          check(!tip.includes("«" + q.pairs[0].left + "»") && (await hints()) === left - 1, "Emparejar con la primera pareja bien: la pista revela otra");
+        }
+        await answerCorrectly(page, q);
+        await page.keyboard.press("Enter");
+      }
+    }
+  }
+  check(seen.orderPartial && seen.orderSolved && seen.matchPartial, "se encontraron preguntas de ordenar y de emparejar");
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
 (async () => {
   const browser = await chromium.launch(
     process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
@@ -525,6 +593,7 @@ async function testLeaveGuard(browser) {
     await testKeyboardScreens(browser);
     await testHints(browser);
     await testLeaveGuard(browser);
+    await testHintTargets(browser);
     if (!QUICK) await testFullSweep(browser);
   } finally {
     await browser.close();

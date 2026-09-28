@@ -760,6 +760,11 @@
   function useHint() {
     if (state.answered || state.hintsLeft <= 0 || state.hintUsedThisQ || state.practice) return;
     if (currentQ().type === "tf") return;
+    // Emparejar u ordenar ya resuelto: no hay nada que revelar, no se cobra
+    if (hintTarget() < 0) {
+      UI.toast("Ya está todo en su lugar: no hace falta pista.");
+      return;
+    }
     TechAudio.playClick();
     state.hintsLeft--;
     state.hintsUsedRun++;
@@ -789,19 +794,32 @@
       const n = Math.max(1, Math.min(4, Math.floor(ans.length / 2)));
       tip = "Pista: empieza con «" + ans.slice(0, n) + "…» (" + ans.length + " caracteres)";
     } else if (q.type === "match") {
-      tip = "Pista: «" + q.pairs[0].left + "» ↔ «" + q.pairs[0].right + "».";
+      // Revela la primera pareja que aún no está bien, no una ya resuelta
+      const i = hintTarget();
+      tip = "Pista: «" + q.pairs[i].left + "» ↔ «" + q.pairs[i].right + "».";
       Object.keys(state.matchSelections).forEach((k) => {
-        if (state.matchSelections[k] === 0) delete state.matchSelections[k];
+        if (state.matchSelections[k] === i) delete state.matchSelections[k];
       });
-      state.matchSelections[0] = 0;
+      state.matchSelections[i] = i;
       paintMatch();
     } else if (q.type === "order") {
-      tip = "Pista: el primero es «" + q.items[q.answer[0]] + "» (ya lo subí).";
-      const at = state.orderItems.findIndex((x) => x.orig === q.answer[0]);
-      state.orderItems.unshift(state.orderItems.splice(at, 1)[0]);
+      // Coloca el primer paso que está fuera de lugar
+      const k = hintTarget();
+      const item = q.items[q.answer[k]];
+      tip = "Pista: el paso " + (k + 1) + " es «" + item + "» (ya lo moví).";
+      const at = state.orderItems.findIndex((x) => x.orig === q.answer[k]);
+      state.orderItems.splice(k, 0, state.orderItems.splice(at, 1)[0]);
       if (state.paintOrder) state.paintOrder();
     }
     box.textContent = tip;
+  }
+
+  /** Índice que revelaría la pista en emparejar/ordenar (-1 si ya está resuelto); 0 en otros tipos. */
+  function hintTarget() {
+    const q = currentQ();
+    if (q.type === "match") return q.pairs.findIndex((_, i) => state.matchSelections[i] !== i);
+    if (q.type === "order") return q.answer.findIndex((v, k) => state.orderItems[k].orig !== v);
+    return 0;
   }
 
   function submitAnswer() {
