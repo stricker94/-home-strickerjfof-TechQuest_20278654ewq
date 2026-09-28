@@ -481,6 +481,38 @@ async function testHints(browser) {
   await page.close();
 }
 
+async function testLeaveGuard(browser) {
+  console.log("Salir de la página a media partida");
+  const page = await newPage(browser);
+  const kinds = [];
+  page.on("dialog", (d) => kinds.push(d.type()));
+  // En el menú recargar no pregunta nada
+  await page.click("#screen-menu [data-action=howto]");
+  await page.reload();
+  check(!kinds.includes("beforeunload"), "en el menú se recarga sin confirmar");
+  await page.click("#screen-menu [data-action=marathon]");
+  await page.waitForTimeout(HUMAN_DELAY);
+  await page.reload();
+  check(kinds.includes("beforeunload"), "a media partida recargar pide confirmación");
+  await page.click("#screen-menu [data-action=practice]");
+  await page.click("[data-world=linux]");
+  await page.click('[data-level="1"]');
+  let found = false;
+  while (await isActive(page, "screen-play")) {
+    await page.waitForTimeout(HUMAN_DELAY);
+    const q = await currentQuestion(page);
+    if (q.type === "fill") {
+      found = (await page.getAttribute("#fill-input", "enterkeyhint")) === "send";
+      break;
+    }
+    await answerCorrectly(page, q);
+    await page.keyboard.press("Enter");
+  }
+  check(found, "el teclado del celular muestra Enviar en las respuestas escritas");
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
 (async () => {
   const browser = await chromium.launch(
     process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}
@@ -492,6 +524,7 @@ async function testHints(browser) {
     await testPauseAndFocus(browser);
     await testKeyboardScreens(browser);
     await testHints(browser);
+    await testLeaveGuard(browser);
     if (!QUICK) await testFullSweep(browser);
   } finally {
     await browser.close();

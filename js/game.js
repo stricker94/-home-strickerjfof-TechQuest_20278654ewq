@@ -54,6 +54,15 @@
     document.addEventListener("pointerdown", () => TechAudio.unlock(), { passive: true });
     document.addEventListener("keydown", () => TechAudio.unlock());
 
+    // Recargar o cerrar la pestaña a media partida la perdería: pedir confirmación
+    window.addEventListener("beforeunload", (e) => {
+      const inRun = ["screen-play", "screen-feedback"].some((id) =>
+        document.getElementById(id)?.classList.contains("active"));
+      if (!inRun) return;
+      e.preventDefault();
+      e.returnValue = "";
+    });
+
     document.body.addEventListener("click", (e) => {
       const t = e.target.closest("[data-action]");
       if (!t) return;
@@ -581,7 +590,7 @@
       submitBtn.hidden = false;
       area.innerHTML = `
         <label class="fill-label" for="fill-input">Tu respuesta:</label>
-        <input id="fill-input" class="fill-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+        <input id="fill-input" class="fill-input" type="text" enterkeyhint="send" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
           placeholder="Escribe aquí…" aria-label="Respuesta" />
         <p class="fill-tip">Mayúsculas flexibles · Enter para enviar</p>`;
       const input = UI.$("#fill-input");
