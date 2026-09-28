@@ -6,6 +6,9 @@ programación, soporte, ciberseguridad, hardware, cloud y bases de datos.
 
 ## Cómo jugar
 
+Guía paso a paso (jugar, publicar en el celular, agregar preguntas y revisar CI):
+[INSTRUCCIONES.md](INSTRUCCIONES.md).
+
 Abre `index.html` en el navegador. No necesita servidor, internet ni dependencias;
 el progreso se guarda en `localStorage`.
 
