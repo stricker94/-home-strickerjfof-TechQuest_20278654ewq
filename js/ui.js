@@ -67,6 +67,9 @@ const UI = (() => {
   function updateHUD(st) {
     const livesWrap = $("#hud-lives-wrap");
     if (livesWrap) livesWrap.hidden = !!st.practice;
+    // Práctica y Repaso no tienen pistas: no mostrar "Pistas 0"
+    const hintsWrap = $("#hud-hints-wrap");
+    if (hintsWrap) hintsWrap.hidden = !!st.practice;
     if (!st.practice) {
       setText("#hud-lives", "❤️".repeat(Math.max(0, st.lives)) + (st.lives <= 0 ? "💀" : ""));
     }
@@ -121,6 +124,9 @@ const UI = (() => {
       el = document.createElement("div");
       el.id = "tq-toast";
       el.className = "tq-toast";
+      // Que los lectores de pantalla también lean el aviso
+      el.setAttribute("role", "status");
+      el.setAttribute("aria-live", "polite");
       document.body.appendChild(el);
     }
     el.textContent = msg;

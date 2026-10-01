@@ -715,6 +715,10 @@
 
   function renderOrder(area, q) {
     state.orderItems = UI.shuffle(q.items.map((text, orig) => ({ text, orig })));
+    // Si el barajado salió ya en el orden correcto, la pregunta se regalaría
+    const solved = () => state.orderItems.every((x, k) => x.orig === q.answer[k]);
+    for (let tries = 0; solved() && tries < 10; tries++) state.orderItems = UI.shuffle(state.orderItems);
+    if (solved()) state.orderItems.push(state.orderItems.shift());
     const list = document.createElement("ul");
     list.className = "order-list";
     list.id = "order-list";
@@ -906,9 +910,11 @@
     finishRound(ok, correctLabel(q));
   }
 
-  function grant(id) {
+  /** quiet: al final de la partida los logros se listan en pantalla, sin toast ni sonido por cada uno. */
+  function grant(id, quiet) {
     if (Progress.unlockAchievement(id)) {
       state.pendingAchievements.push(id);
+      if (quiet) return;
       TechAudio.playAchievement();
       const a = ACHIEVEMENTS.find((x) => x.id === id);
       if (a) UI.toast("Logro: " + a.icon + " " + a.name);
@@ -956,6 +962,15 @@
     showFeedback(ok, gained, correctText, currentQ().explain, timedOut);
   }
 
+  function achievementsText(ids) {
+    return ids
+      .map((id) => {
+        const a = ACHIEVEMENTS.find((x) => x.id === id);
+        return a ? a.icon + " " + a.name : id;
+      })
+      .join(" · ");
+  }
+
   function showFeedback(ok, gained, correctText, explain, timedOut) {
     UI.showScreen("screen-feedback");
     UI.flashFeedback(ok);
@@ -978,14 +993,7 @@
     if (ach) {
       if (state.pendingAchievements.length) {
         ach.hidden = false;
-        ach.textContent =
-          "¡Logro! " +
-          state.pendingAchievements
-            .map((id) => {
-              const a = ACHIEVEMENTS.find((x) => x.id === id);
-              return a ? a.icon + " " + a.name : id;
-            })
-            .join(" · ");
+        ach.textContent = "¡Logro! " + achievementsText(state.pendingAchievements);
         state.pendingAchievements = [];
       } else ach.hidden = true;
     }
@@ -1017,25 +1025,25 @@
     if (victory) {
       if (state.mode === "campaign" && state.worldId && state.level) {
         Progress.markLevelCleared(state.worldId, state.level);
-        grant("first_win");
-        if (state.hintsUsedRun === 0) grant("no_hints");
+        grant("first_win", true);
+        if (state.hintsUsedRun === 0) grant("no_hints", true);
         const maxL = (Progress.levelsPerWorld && Progress.levelsPerWorld()) || GAME_CONFIG.levelsPerWorld || 5;
-        if (state.worldId === "support" && state.level >= maxL) grant("support_hero");
-        if (state.worldId === "security" && state.level >= maxL) grant("security_hero");
-        if (state.worldId === "hardware" && state.level >= maxL) grant("hardware_hero");
-        if (state.worldId === "cloud" && state.level >= maxL) grant("cloud_hero");
-        if (state.worldId === "database" && state.level >= maxL) grant("database_hero");
-        if (Progress.allLevelsCleared(state.worldId)) grant("world_maestro");
-        if (Progress.countClearedLevels() >= 25) grant("level_master");
-        if (Progress.allWorldsCompleted()) grant("all_worlds");
-        if (WORLDS.every((w) => Progress.allLevelsCleared(w.id))) grant("all_levels");
+        if (state.worldId === "support" && state.level >= maxL) grant("support_hero", true);
+        if (state.worldId === "security" && state.level >= maxL) grant("security_hero", true);
+        if (state.worldId === "hardware" && state.level >= maxL) grant("hardware_hero", true);
+        if (state.worldId === "cloud" && state.level >= maxL) grant("cloud_hero", true);
+        if (state.worldId === "database" && state.level >= maxL) grant("database_hero", true);
+        if (Progress.allLevelsCleared(state.worldId)) grant("world_maestro", true);
+        if (Progress.countClearedLevels() >= 25) grant("level_master", true);
+        if (Progress.allWorldsCompleted()) grant("all_worlds", true);
+        if (WORLDS.every((w) => Progress.allLevelsCleared(w.id))) grant("all_levels", true);
       }
-      if (state.mode === "marathon") grant("marathon");
-      if (state.mode === "timer") grant("timer_ace");
+      if (state.mode === "marathon") grant("marathon", true);
+      if (state.mode === "timer") grant("timer_ace", true);
       if (state.mode === "boss" && state.worldId) {
         Progress.markBossWin(state.worldId);
-        grant("boss_slayer");
-        if (Progress.allBossesBeaten()) grant("all_bosses");
+        grant("boss_slayer", true);
+        if (Progress.allBossesBeaten()) grant("all_bosses", true);
       }
     }
 
@@ -1088,6 +1096,19 @@
         }
       } else unlockEl.hidden = true;
     }
+
+    // Todos los logros de esta partida que no se mostraron en una pregunta
+    const ach = UI.$("#end-ach");
+    if (ach) {
+      const ids = state.pendingAchievements;
+      ach.hidden = !ids.length;
+      ach.textContent = ids.length ? (ids.length > 1 ? "¡Logros nuevos! " : "¡Logro nuevo! ") + achievementsText(ids) : "";
+    }
+    state.pendingAchievements = [];
+
+    // Reintentar un repaso sin errores pendientes no haría nada
+    const retryBtn = UI.$("#btn-retry");
+    if (retryBtn) retryBtn.hidden = state.mode === "review" && !pending;
 
     if (victory) TechAudio.playLevelComplete();
     else TechAudio.playGameOver();

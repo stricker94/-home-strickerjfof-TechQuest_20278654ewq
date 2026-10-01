@@ -209,6 +209,8 @@ async function testCampaign(browser) {
   check(!summary.includes("\\n") && summary.includes("\n"), "resumen con saltos de línea reales");
   check(summary.includes("Modo: Aventura"), "modo en español en el resumen");
   check(/Nuevo récord/.test(summary), "Aventura cuenta para el récord");
+  const ach = await page.textContent("#end-ach");
+  check(await page.isVisible("#end-ach") && ach.includes("Primera victoria") && ach.includes("Sin pistas"), "la pantalla final lista todos los logros ganados: " + ach);
   await page.click("#screen-end [data-action=play]");
   await page.click("[data-world=linux]");
   check(!(await page.$eval("#level-grid .level-card:nth-child(2)", (e) => e.disabled)), "nivel 2 desbloqueado tras ganar el 1");
@@ -227,6 +229,7 @@ async function testReviewAndReset(browser) {
   const items = await page.$$eval("#end-review-list li", (els) => els.length);
   check(items === r.answered, `la pantalla final lista los ${r.answered} errores (${items})`);
   check(!/Nuevo récord/.test(await page.textContent("#end-summary")), "Práctica no cuenta para el récord");
+  check(!(await page.isVisible("#end-ach")), "sin logros nuevos no se muestra la línea de logros");
   check(await page.isVisible("#btn-end-review") && (await page.textContent("#end-missed")) === String(r.answered), "la pantalla final ofrece repasar los errores");
   await page.click("#screen-end [data-action=menu]");
   check((await page.textContent("#menu-missed")) === String(r.answered), "el menú muestra los errores pendientes");
@@ -240,6 +243,7 @@ async function testReviewAndReset(browser) {
   const r2 = await playRun(page);
   check(r2.problems.length === 0 && r2.answered === r.answered, "el Repaso muestra las preguntas falladas");
   check(!(await page.isVisible("#btn-end-review")), "al terminar el Repaso sin errores ya no se ofrece repasar");
+  check(!(await page.isVisible("#btn-retry")), "sin errores pendientes no se ofrece Reintentar el Repaso");
   await page.click("#screen-end [data-action=menu]");
   check((await page.textContent("#menu-missed")) === "0", "acertarlas vacía la lista de errores");
   await page.click("#screen-menu [data-action=stats]");
@@ -540,6 +544,38 @@ async function orderFirst(page, q, n) {
   }
 }
 
+async function testOrderAndToast(browser) {
+  console.log("Ordenar nunca empieza resuelto; avisos y HUD de Práctica");
+  const page = await newPage(browser);
+  // Fuerza el peor caso: un barajado que deja todo en su lugar
+  await page.evaluate(() => { UI.shuffle = (a) => a.slice(); });
+  await page.click("#screen-menu [data-action=practice]");
+  await page.click("[data-world=linux]");
+  await page.click('[data-level="1"]');
+  check(!(await page.isVisible("#hud-hints-wrap")), "Práctica no muestra el contador de pistas");
+  let found = false;
+  while (await isActive(page, "screen-play")) {
+    await page.waitForTimeout(HUMAN_DELAY);
+    const q = await currentQuestion(page);
+    if (q.type === "order") {
+      check((await orderMismatch(page, q)) >= 0, "una pregunta de ordenar no aparece ya resuelta");
+      found = true;
+      break;
+    }
+    await answerCorrectly(page, q);
+    await page.keyboard.press("Enter");
+  }
+  if (!found) check(false, "no apareció una pregunta de ordenar");
+
+  await page.evaluate(() => UI.toast("Aviso de prueba"));
+  check((await page.getAttribute("#tq-toast", "role")) === "status", "los avisos se anuncian a lectores de pantalla");
+  await page.waitForTimeout(3300);
+  const gone = await page.$eval("#tq-toast", (e) => getComputedStyle(e).visibility === "hidden" && e.getBoundingClientRect().top >= innerHeight);
+  check(gone, "el aviso desaparece por completo al ocultarse");
+  check(page.errors.length === 0, "sin errores de JavaScript " + page.errors.join(" | "));
+  await page.close();
+}
+
 async function testHintTargets(browser) {
   console.log("La pista revela lo que falta, no lo ya resuelto");
   const page = await newPage(browser);
@@ -601,6 +637,7 @@ async function testHintTargets(browser) {
     await testHints(browser);
     await testLeaveGuard(browser);
     await testHintTargets(browser);
+    await testOrderAndToast(browser);
     if (!QUICK) await testFullSweep(browser);
   } finally {
     await browser.close();

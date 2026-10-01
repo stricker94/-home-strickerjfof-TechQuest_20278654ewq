@@ -698,8 +698,8 @@ kbd {
 @keyframes flashOk { from { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); } to { box-shadow: 0 0 24px 4px rgba(0,255,136,0.15); } }
 @keyframes flashBad { from { box-shadow: 0 0 0 0 rgba(255,85,119,0.5); } to { box-shadow: 0 0 24px 4px rgba(255,85,119,0.15); } }
 
-.tq-toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%) translateY(120%); background: #122; color: var(--accent); border: 1px solid var(--accent); padding: 0.7rem 1.1rem; border-radius: 999px; z-index: 100; transition: transform 0.25s ease; font-family: var(--mono); font-size: 0.9rem; pointer-events: none; }
-.tq-toast.show { transform: translateX(-50%) translateY(0); }
+.tq-toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%) translateY(calc(100% + 2rem)); visibility: hidden; transition: transform 0.25s ease, visibility 0.25s; background: #122; color: var(--accent); border: 1px solid var(--accent); padding: 0.7rem 1.1rem; border-radius: 999px; z-index: 100; font-family: var(--mono); font-size: 0.9rem; pointer-events: none; }
+.tq-toast.show { transform: translateX(-50%) translateY(0); visibility: visible; }
 
 .option-btn.correct { border-color: var(--ok); background: rgba(0,255,136,0.12); }
 .option-btn.wrong { border-color: var(--danger); background: rgba(255,85,119,0.12); }
