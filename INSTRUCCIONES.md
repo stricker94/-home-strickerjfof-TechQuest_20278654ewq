@@ -42,7 +42,7 @@ Cada vez que se hace merge a `main`, la página se actualiza sola en uno o dos m
 | 🏃 Maratón | 20 preguntas mezcladas de todos los mundos. |
 | ⏱️ Cronómetro | 25 segundos por pregunta. El tiempo se pausa si cambias de app o de pestaña. |
 | 👹 Boss | Incidente difícil con 20 segundos por pregunta, uno por mundo desbloqueado. |
-| 🔁 Repasar errores | Vuelves a jugar lo que fallaste; cada pregunta sale de la lista al acertarla. |
+| 🔁 Repasar errores | Vuelves a jugar lo que fallaste; cada pregunta sale de la lista al acertarla. También aparece como botón al terminar una partida. |
 
 Atajos de teclado: `1`–`4` elegir opción, `V`/`F` verdadero o falso, `Enter` comprobar o
 continuar, `H` pista, `M` sonido, `Esc` salir.

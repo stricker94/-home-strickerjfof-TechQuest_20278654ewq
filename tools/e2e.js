@@ -227,12 +227,19 @@ async function testReviewAndReset(browser) {
   const items = await page.$$eval("#end-review-list li", (els) => els.length);
   check(items === r.answered, `la pantalla final lista los ${r.answered} errores (${items})`);
   check(!/Nuevo récord/.test(await page.textContent("#end-summary")), "Práctica no cuenta para el récord");
+  check(await page.isVisible("#btn-end-review") && (await page.textContent("#end-missed")) === String(r.answered), "la pantalla final ofrece repasar los errores");
   await page.click("#screen-end [data-action=menu]");
   check((await page.textContent("#menu-missed")) === String(r.answered), "el menú muestra los errores pendientes");
-  await page.click("#btn-review");
-  check((await page.textContent("#hud-world")).includes("Repaso"), "modo Repaso iniciado");
+  // Volver a jugar el nivel y repasar desde la pantalla final, sin pasar por el menú
+  await page.click("#screen-menu [data-action=practice]");
+  await page.click("[data-world=linux]");
+  await page.click('[data-level="2"]');
+  await playRun(page);
+  await page.click("#btn-end-review");
+  check((await page.textContent("#hud-world")).includes("Repaso"), "modo Repaso iniciado desde la pantalla final");
   const r2 = await playRun(page);
   check(r2.problems.length === 0 && r2.answered === r.answered, "el Repaso muestra las preguntas falladas");
+  check(!(await page.isVisible("#btn-end-review")), "al terminar el Repaso sin errores ya no se ofrece repasar");
   await page.click("#screen-end [data-action=menu]");
   check((await page.textContent("#menu-missed")) === "0", "acertarlas vacía la lista de errores");
   await page.click("#screen-menu [data-action=stats]");

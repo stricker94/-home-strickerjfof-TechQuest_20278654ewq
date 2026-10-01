@@ -1063,6 +1063,11 @@
     );
     UI.setText("#end-highscore", String(UI.getHighScore()));
     renderEndReview();
+    // Atajo para repasar lo fallado sin volver al menú (en Repaso ya lo hace Reintentar)
+    const pending = missedQuestions().length;
+    const reviewBtn = UI.$("#btn-end-review");
+    if (reviewBtn) reviewBtn.hidden = !pending || state.mode === "review";
+    UI.setText("#end-missed", String(pending));
 
     const unlockEl = UI.$("#end-unlock");
     if (unlockEl) {
